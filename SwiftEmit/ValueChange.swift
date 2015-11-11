@@ -9,7 +9,7 @@
 import Foundation
 
 extension Event {
-  class ValueChange: Event.Base {
+  public class ValueChange: Event.Base {
     let oldValue: AnyObject?
     let newValue: AnyObject?
     let name: String?
