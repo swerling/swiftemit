@@ -10,6 +10,13 @@
 		9B0AA6501BF3AC6800F2A981 /* SwiftEmit.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B0AA64F1BF3AC6800F2A981 /* SwiftEmit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9B0AA6571BF3AC6800F2A981 /* SwiftEmit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B0AA64C1BF3AC6800F2A981 /* SwiftEmit.framework */; };
 		9B0AA65C1BF3AC6800F2A981 /* SwiftEmitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA65B1BF3AC6800F2A981 /* SwiftEmitTests.swift */; };
+		9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */; };
+		9B0AA66A1BF3B15700F2A981 /* ValueChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6691BF3B15700F2A981 /* ValueChange.swift */; };
+		9B0AA66D1BF3B20900F2A981 /* Base.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA66C1BF3B20900F2A981 /* Base.swift */; };
+		9B0AA6701BF3B3BA00F2A981 /* NS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA66F1BF3B3BA00F2A981 /* NS.swift */; };
+		9B0AA6721BF3B44600F2A981 /* KVOAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6711BF3B44600F2A981 /* KVOAdaptor.swift */; };
+		9B0AA6741BF3C22400F2A981 /* NotificationCenterAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6731BF3C22400F2A981 /* NotificationCenterAdaptor.swift */; };
+		9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,11 +31,18 @@
 
 /* Begin PBXFileReference section */
 		9B0AA64C1BF3AC6800F2A981 /* SwiftEmit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftEmit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9B0AA64F1BF3AC6800F2A981 /* SwiftEmit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftEmit.h; sourceTree = "<group>"; };
-		9B0AA6511BF3AC6800F2A981 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B0AA64F1BF3AC6800F2A981 /* SwiftEmit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SwiftEmit.h; path = SwiftEmit/SwiftEmit.h; sourceTree = "<group>"; };
+		9B0AA6511BF3AC6800F2A981 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = SwiftEmit/Info.plist; sourceTree = "<group>"; };
 		9B0AA6561BF3AC6800F2A981 /* SwiftEmitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftEmitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B0AA65B1BF3AC6800F2A981 /* SwiftEmitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEmitTests.swift; sourceTree = "<group>"; };
 		9B0AA65D1BF3AC6800F2A981 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftEmit.swift; sourceTree = "<group>"; };
+		9B0AA6691BF3B15700F2A981 /* ValueChange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueChange.swift; sourceTree = "<group>"; };
+		9B0AA66C1BF3B20900F2A981 /* Base.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Base.swift; sourceTree = "<group>"; };
+		9B0AA66F1BF3B3BA00F2A981 /* NS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NS.swift; sourceTree = "<group>"; };
+		9B0AA6711BF3B44600F2A981 /* KVOAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVOAdaptor.swift; sourceTree = "<group>"; };
+		9B0AA6731BF3C22400F2A981 /* NotificationCenterAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenterAdaptor.swift; sourceTree = "<group>"; };
+		9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreMotionAdaptor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +67,7 @@
 		9B0AA6421BF3AC6800F2A981 = {
 			isa = PBXGroup;
 			children = (
+				9B0AA66B1BF3B18700F2A981 /* Boilerplate */,
 				9B0AA64E1BF3AC6800F2A981 /* SwiftEmit */,
 				9B0AA65A1BF3AC6800F2A981 /* SwiftEmitTests */,
 				9B0AA64D1BF3AC6800F2A981 /* Products */,
@@ -71,8 +86,9 @@
 		9B0AA64E1BF3AC6800F2A981 /* SwiftEmit */ = {
 			isa = PBXGroup;
 			children = (
-				9B0AA64F1BF3AC6800F2A981 /* SwiftEmit.h */,
-				9B0AA6511BF3AC6800F2A981 /* Info.plist */,
+				9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */,
+				9B0AA6681BF3B13A00F2A981 /* Events */,
+				9B0AA66E1BF3B37B00F2A981 /* NS */,
 			);
 			path = SwiftEmit;
 			sourceTree = "<group>";
@@ -84,6 +100,35 @@
 				9B0AA65D1BF3AC6800F2A981 /* Info.plist */,
 			);
 			path = SwiftEmitTests;
+			sourceTree = "<group>";
+		};
+		9B0AA6681BF3B13A00F2A981 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				9B0AA66C1BF3B20900F2A981 /* Base.swift */,
+				9B0AA6691BF3B15700F2A981 /* ValueChange.swift */,
+			);
+			name = Events;
+			sourceTree = "<group>";
+		};
+		9B0AA66B1BF3B18700F2A981 /* Boilerplate */ = {
+			isa = PBXGroup;
+			children = (
+				9B0AA6511BF3AC6800F2A981 /* Info.plist */,
+				9B0AA64F1BF3AC6800F2A981 /* SwiftEmit.h */,
+			);
+			name = Boilerplate;
+			sourceTree = "<group>";
+		};
+		9B0AA66E1BF3B37B00F2A981 /* NS */ = {
+			isa = PBXGroup;
+			children = (
+				9B0AA66F1BF3B3BA00F2A981 /* NS.swift */,
+				9B0AA6711BF3B44600F2A981 /* KVOAdaptor.swift */,
+				9B0AA6731BF3C22400F2A981 /* NotificationCenterAdaptor.swift */,
+				9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */,
+			);
+			name = NS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,6 +241,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B0AA6701BF3B3BA00F2A981 /* NS.swift in Sources */,
+				9B0AA6741BF3C22400F2A981 /* NotificationCenterAdaptor.swift in Sources */,
+				9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */,
+				9B0AA6721BF3B44600F2A981 /* KVOAdaptor.swift in Sources */,
+				9B0AA66D1BF3B20900F2A981 /* Base.swift in Sources */,
+				9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */,
+				9B0AA66A1BF3B15700F2A981 /* ValueChange.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +362,7 @@
 		9B0AA6611BF3AC6800F2A981 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -320,12 +373,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.swerling.SwiftEmit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		9B0AA6621BF3AC6800F2A981 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
