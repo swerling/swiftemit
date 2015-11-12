@@ -8,22 +8,17 @@
 
 import Foundation
 
-extension Event {
-  public class ValueChange: Event.Base {
-    let oldValue: AnyObject?
-    let newValue: AnyObject?
-    let name: String?
-    
-    init(oldValue: AnyObject? = nil, newValue: AnyObject? = nil, name: String? = nil) {
-      self.oldValue = oldValue
-      self.newValue = newValue
-      self.name = name
-    }
-    
+public class ValueChangeEvent: Event  {
+  public let oldValue: AnyObject?
+  public let newValue: AnyObject?
+  public let name: String?
+  
+  public init(oldValue: AnyObject? = nil, newValue: AnyObject? = nil, name: String? = nil) {
+    self.oldValue = oldValue
+    self.newValue = newValue
+    self.name = name
   }
 }
 
 // Same as value change, but users can send this on willChange
-extension Event {
-  class ValueWillChange: Event.ValueChange { }
-}
+public class ValueWillChangeEvent: ValueChangeEvent { }

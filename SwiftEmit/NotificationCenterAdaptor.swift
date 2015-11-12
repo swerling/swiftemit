@@ -27,11 +27,19 @@
 
 import Foundation
 
-extension Event {
-  typealias NotificationCenter = SwiftEmit.Event.Base
+typealias NotificationCenterEvent = Event
+
+extension NSNotificationCenter {
+  public func swiftEmit(eventName:String, handler: Handler)
+    -> AdaptorForNSNotificationCenter
+  {
+    return AdaptorForNSNotificationCenter(
+      noticationCenterEventName: eventName,
+      handler: handler)
+  }
 }
 
-class PubSubAdaptorForNSNotificationCenter: NSObject, NS {
+public class AdaptorForNSNotificationCenter: SwiftEmitNS {
   
   var observing = false
   var handler: Handler
@@ -46,7 +54,7 @@ class PubSubAdaptorForNSNotificationCenter: NSObject, NS {
     stopObserving()
   }
   
-  func startObserving() -> Bool {
+  public override func startObserving() -> Bool {
     guard !observing else { return false }
    
     NSNotificationCenter.defaultCenter().addObserver(self,
@@ -59,7 +67,7 @@ class PubSubAdaptorForNSNotificationCenter: NSObject, NS {
     return true
   }
   
-  func stopObserving() -> Bool {
+  public override func stopObserving() -> Bool {
     guard observing else { return false }
    
     NSNotificationCenter.defaultCenter().removeObserver(self)
@@ -69,7 +77,7 @@ class PubSubAdaptorForNSNotificationCenter: NSObject, NS {
   }
   
   func handle() {
-    handler(Event.NotificationCenter())
+    handler(NotificationCenterEvent())
   }
   
 }

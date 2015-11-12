@@ -8,11 +8,31 @@
 
 import Foundation
 
-extension Event {
-  typealias KVO = SwiftEmit.Event.ValueChange
+extension NSObject {
+  
+  public func swiftEmitFloat(keyPath:String, handler: Handler)
+    -> AdaptorForNSKVO?
+  {
+    var context = Float()
+    return swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
+  }
+  
+  // see #swiftEmitFloat for example context creation.
+  public func swiftEmit(onKeyPath kp:String,
+    context: UnsafeMutablePointer<Void>,
+    handler: Handler) -> AdaptorForNSKVO
+  {
+    return AdaptorForNSKVO(
+      observee: self,
+      keyPath: kp,
+      context: context,
+      handler: handler)
+  }
 }
 
-class SwiftEmitAdaptorForNSKVO: NSObject, NS {
+public class KVOEvent: ValueChangeEvent {}
+
+public class AdaptorForNSKVO: SwiftEmitNS {
   
   let NullValue  = "__KVO_CHANGED_VALUE_WAS_NULL__"
   
@@ -23,20 +43,6 @@ class SwiftEmitAdaptorForNSKVO: NSObject, NS {
   var observing = false
   
   let options =  NSKeyValueObservingOptions([.New, .Old])
-  
-  static func observe(observee observee: NSObject, keyPath: String,
-    handler: Handler) -> SwiftEmitAdaptorForNSKVO {
-    var ctx = Float()
-    return SwiftEmitAdaptorForNSKVO(
-      observee: observee, keyPath: keyPath, context: &ctx, handler: handler)
-  }
-  
-  static func observeFloat(observee observee: NSObject, keyPath: String,
-    handler: Handler) -> SwiftEmitAdaptorForNSKVO {
-    var ctx = Float()
-    return SwiftEmitAdaptorForNSKVO(
-      observee: observee, keyPath: keyPath, context: &ctx, handler: handler)
-  }
   
   init(observee: NSObject,
     keyPath: String,
@@ -52,7 +58,7 @@ class SwiftEmitAdaptorForNSKVO: NSObject, NS {
     stopObserving()
   }
   
-  func startObserving() -> Bool {
+  public override func startObserving() -> Bool {
     guard !observing else { return false }
    
     observee.addObserver(self,
@@ -65,7 +71,7 @@ class SwiftEmitAdaptorForNSKVO: NSObject, NS {
     return true
   }
   
-  func stopObserving() -> Bool {
+  public override func stopObserving() -> Bool {
     guard observing else { return false }
     
     observee.removeObserver(self, forKeyPath: keyPath)
@@ -74,7 +80,7 @@ class SwiftEmitAdaptorForNSKVO: NSObject, NS {
     return true
   }
   
-  override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+  override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
     
     //print("=== Observe: \(keyPath)")
     
@@ -92,7 +98,7 @@ class SwiftEmitAdaptorForNSKVO: NSObject, NS {
       if let nv = c[NSKeyValueChangeNewKey] { newVal = nv }
     }
     
-    handler(Event.KVO(oldValue: oldVal, newValue: newVal))
+    handler(KVOEvent(oldValue: oldVal, newValue: newVal))
   }
   
 }

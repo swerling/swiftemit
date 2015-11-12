@@ -9,22 +9,15 @@
 import Foundation
 
 // todo: make this generic, instead of forcing handlers to subclass Event.Base
-public typealias Handler = (Event.Base) -> ()
+public typealias Handler = (Event) -> ()
 
 public protocol Emitter {
   var eventHandlers: [SwiftEmit.Handler] { get }
 }
 
 public extension Emitter {
-  func emit(event: Event.Base) {
+  func emit(event: Event) {
     event.emit(from: self, to: eventHandlers)
   }
 }
-
-// Subclasses are implemened as extenstions to Event
-public class Event { }
-
-
-
-
 
