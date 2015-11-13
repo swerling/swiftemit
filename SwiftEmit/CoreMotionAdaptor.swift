@@ -19,7 +19,7 @@ import Foundation
 import Foundation
 import CoreMotion
 
-public class DeviceMotionEvent: Event {
+public class DeviceMotionEvent: BasicEvent {
   public let motion: CMDeviceMotion?
   public let error: NSError?
   init(motion: CMDeviceMotion?, error: NSError?) {

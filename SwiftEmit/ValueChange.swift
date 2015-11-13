@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class ValueChangeEvent: Event  {
+public class ValueChangeEvent: BasicEvent  {
   public let oldValue: AnyObject?
   public let newValue: AnyObject?
   public let name: String?

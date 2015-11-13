@@ -27,7 +27,7 @@
 
 import Foundation
 
-typealias NotificationCenterEvent = Event
+typealias NotificationCenterEvent = BasicEvent
 
 extension NSNotificationCenter {
   public func swiftEmit(eventName:String, handler: Handler)

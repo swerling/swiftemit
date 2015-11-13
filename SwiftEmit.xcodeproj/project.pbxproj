@@ -18,6 +18,7 @@
 		9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */; };
 		9B2D348F1BF504650090900C /* SwiftEmitNS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2D348D1BF504650090900C /* SwiftEmitNS.swift */; };
 		9B2D34911BF504B40090900C /* SwiftEmit.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 9B2D34901BF504B40090900C /* SwiftEmit.podspec */; };
+		9B2D34931BF642A50090900C /* AnyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2D34921BF642A50090900C /* AnyKey.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +46,8 @@
 		9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreMotionAdaptor.swift; sourceTree = "<group>"; };
 		9B2D348D1BF504650090900C /* SwiftEmitNS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftEmitNS.swift; sourceTree = "<group>"; };
 		9B2D34901BF504B40090900C /* SwiftEmit.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftEmit.podspec; sourceTree = "<group>"; };
+		9B2D34921BF642A50090900C /* AnyKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyKey.swift; sourceTree = "<group>"; };
+		9B2D34941BF644740090900C /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +93,8 @@
 			isa = PBXGroup;
 			children = (
 				9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */,
+				9B2D34921BF642A50090900C /* AnyKey.swift */,
+				9B2D34941BF644740090900C /* MyPlayground.playground */,
 				9B0AA6681BF3B13A00F2A981 /* Events */,
 				9B0AA66E1BF3B37B00F2A981 /* NS */,
 			);
@@ -245,6 +250,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2D34931BF642A50090900C /* AnyKey.swift in Sources */,
 				9B0AA6741BF3C22400F2A981 /* NotificationCenterAdaptor.swift in Sources */,
 				9B2D348F1BF504650090900C /* SwiftEmitNS.swift in Sources */,
 				9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */,
