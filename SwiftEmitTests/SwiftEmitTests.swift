@@ -45,13 +45,15 @@ class SwiftEmitTests: XCTestCase {
     var will2 = ""
     var did = ""
     
-    emitter1.on(ValueWillChangeEvent.typeId) { eventInfo in
+    emitter1.on(ValueWillChangeEvent.self) { eventInfo in
+      guard eventInfo.payload is ValueWillChangeEvent else { return }
       will = "handler 1 will fire"
     }
-    emitter1.on(ValueWillChangeEvent.typeId) { eventInfo in
+    emitter1.on(ValueWillChangeEvent.self) { eventInfo in
       will2 = "handler 1 will fire twice"
     }
-    emitter1.on(ValueChangeEvent.typeId) { eventInfo in
+    emitter1.on(ValueChangeEvent.self) { eventInfo in
+      guard eventInfo.payload is ValueChangeEvent else { return }
       did = "handler 1 did fire"
     }
     emitter1.val = 1  // should fire ValueChangeEvent, setting b
@@ -59,7 +61,7 @@ class SwiftEmitTests: XCTestCase {
     XCTAssert(will2 == "handler 1 will fire twice", "expected handler 1 willSet to fire twice. tests 2 handlers on same object and event type. 'will2' is \(will2)")
     XCTAssert(did == "handler 1 did fire", "expected handler didSet to fire. tests 2 event types on one object. 'did' is \(did)")
     
-    emitter2.on(ValueChangeEvent.typeId) { eventInfo in
+    emitter2.on(ValueChangeEvent.self) { eventInfo in
       will = "handler 2 will fire"
     }
     emitter2.val = 1  // should fire ValueChangeEvent, setting b

@@ -4,9 +4,10 @@ import UIKit
 import SwiftEmit
 
 var str = "Hello, playground"
-var event1 = Event()
-var event2 = ValueChangeEvent()
+var event2 = ValueChangeEvent(oldValue: 1, newValue: 2)
+print("e2: \(event2.self)")
 
+/*
 print(String(event1.dynamicType))
 print(String(event1.dynamicType))
 "\(event1.dynamicType)"
@@ -72,3 +73,4 @@ var dict: [AnyKey: Int] = [AnyKey("foo"): 1, AnyKey(22): 2]
 
 print(dict[AnyKey("foo")])
 print(dict[AnyKey(22)])
+*/
