@@ -25,6 +25,7 @@
 //  Copyright © 2015 spswerling. All rights reserved.
 //
 
+/*
 import Foundation
 
 typealias NotificationCenterEvent = BasicEvent
@@ -81,3 +82,4 @@ public class AdaptorForNSNotificationCenter: SwiftEmitNS {
   }
   
 }
+*/

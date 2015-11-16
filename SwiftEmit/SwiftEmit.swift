@@ -9,51 +9,77 @@
 import Foundation
 
 // todo: make this generic, instead of forcing handlers to subclass Event.Base
-public typealias Handler = (Event) -> ()
+public typealias Handler = (EventInfo) -> ()
 
-public protocol Emitter {
-  var eventHandlers: [SwiftEmit.Handler] { get }
+public typealias EventTypeId = String
+
+public protocol Emitter: Hashable {
+  func on(eventId: EventTypeId, handler: Handler)
+  func emit(event: Event) -> EventInfo?
 }
 
-public struct EventInfo<T: Event> {
+public struct EventInfo {
   var sender: AnyObject
   var startTime: NSDate
-  var endTime: NSDate
-  var payload: T
+  var endTime: NSDate?
+  var payload: Event
 }
 
 public extension Emitter {
-  func emit(event: Event) {
-    event.emit(from: self, to: eventHandlers)
+  
+  public func on<T: Event>(type: T, handler: Handler) {
+    return on(T.typeId, handler: handler)
   }
   
-  
-  /*
-  func emitB(event: Event) {
-    event.emit(from: self,
-      to: EventMap.handlersFor(self, event: event))
-    //event.emit(from: self, to: eventHandlers)
+  public func on(eventId: EventTypeId, handler: Handler) {
+    EventMap.add(self, eventId: eventId, handler: handler)
   }
   
-  func handlersFor(object: AnyObject, event: Event) {
+  func emit(event: Event)  -> EventInfo? {
     
+    guard let handlers = EventMap.handlers(self, event: event) else {
+      return nil
+    }
+    
+    guard let sender = self as? AnyObject else { return nil }
+    var eventInfo = EventInfo(sender: sender,
+      startTime: NSDate(),
+      endTime: nil,
+      payload: event)
+    
+    for handler in handlers {
+      handler(eventInfo)
+    }
+    
+    eventInfo.endTime = NSDate()
+    return eventInfo
   }
-*/
+  
 }
 
-/*
 class EventMap {
-  typealias EventTypeLookup = [Event.Type: [Handler]]
-  static var objectLookup = [AnyObject: EventTypeLookup]()
-  static func add(object: AnyObject, event: Event, handler: Handler) {
-    if objectLookup[object] == nil {
-      objectLookup[object] = [EventTypeLookup]()
+  typealias EventTypeLookup = [EventTypeId: [Handler]]
+  static var objectLookup = [Int: EventTypeLookup]()
+  
+  static func add<T: Hashable>(object: T, eventId: EventTypeId, handler: Handler) {
+    let ohash = object.hashValue
+    if var eventTypeLookup = objectLookup[ohash] {
+      if eventTypeLookup[eventId] != nil {
+        objectLookup[ohash]?[eventId]?.append(handler)
+      } else {
+        objectLookup[ohash]?[eventId] = [handler]
+      }
+    } else {
+      objectLookup[ohash] = [eventId: [handler]]
     }
-    objectLookup[object][event.Type].append(handler)
-  }
-  static func handersFor(object: AnyObject, event: Event) {
-    let typeLookup = map[object]
     
+    print("Added \(ohash)")
+  }
+  
+  static func handlers<T: Emitter>(object: T, event: Event) -> [Handler]? {
+    let ohash = object.hashValue
+    guard let eventTypeToHandlers = objectLookup[ohash] else { return nil }
+    guard let handlers = eventTypeToHandlers[event.dynamicType.typeId] else { return nil }
+    return handlers
   }
 }
-*/

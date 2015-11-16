@@ -9,17 +9,25 @@
 import XCTest
 @testable import SwiftEmit
 
-class SwiftEmitTests: XCTestCase {
-  
-  class TestEmitter: Emitter {
-    init() {}
-    var eventHandlers = [Handler]()
-    var active = false {
-      didSet {
-        emit(ValueChangeEvent(oldValue: oldValue, newValue: active))
-      }
+class TestEmitter: Emitter {
+  init(h: Int) { hashValue = h}
+  var hashValue: Int = 0
+  var eventHandlers = [Handler]()
+  var val = 0 {
+    willSet {
+      emit(ValueWillChangeEvent(oldValue: val, newValue: newValue, name: "val"))
+    }
+    didSet {
+      emit(ValueChangeEvent(oldValue: oldValue, newValue: val, name: "val"))
     }
   }
+}
+  
+func ==(x: TestEmitter, y: TestEmitter) -> Bool {
+  return x.hashValue == y.hashValue
+}
+
+class SwiftEmitTests: XCTestCase {
   
   /*
   override func setUp() {
@@ -31,15 +39,32 @@ class SwiftEmitTests: XCTestCase {
   }*/
   
   func testValueChangeEvent() {
-    let emitter = TestEmitter()
-    var b = false
-    emitter.active = false
-    emitter.eventHandlers.append({ event in
-      guard let event = event as? ValueChangeEvent else {return}
-      b = event.newValue as! Bool // does this suck?
-    })
-    emitter.active = true  // should fire ValueChangeEvent, setting b
-    XCTAssert(b, "expected event handler to set var to true")
+    let emitter1 = TestEmitter(h: 1)
+    let emitter2 = TestEmitter(h: 2)
+    var will = ""
+    var will2 = ""
+    var did = ""
+    
+    emitter1.on(ValueWillChangeEvent.typeId) { eventInfo in
+      will = "handler 1 will fire"
+    }
+    emitter1.on(ValueWillChangeEvent.typeId) { eventInfo in
+      will2 = "handler 1 will fire twice"
+    }
+    emitter1.on(ValueChangeEvent.typeId) { eventInfo in
+      did = "handler 1 did fire"
+    }
+    emitter1.val = 1  // should fire ValueChangeEvent, setting b
+    XCTAssert(will == "handler 1 will fire", "expected handler 1 willSet to fire. 'will' is \(will)")
+    XCTAssert(will2 == "handler 1 will fire twice", "expected handler 1 willSet to fire twice. tests 2 handlers on same object and event type. 'will2' is \(will2)")
+    XCTAssert(did == "handler 1 did fire", "expected handler didSet to fire. tests 2 event types on one object. 'did' is \(did)")
+    
+    emitter2.on(ValueChangeEvent.typeId) { eventInfo in
+      will = "handler 2 will fire"
+    }
+    emitter2.val = 1  // should fire ValueChangeEvent, setting b
+    XCTAssert(will == "handler 2 will fire", "expected handler 2 to fire. tests similar event type firing on different objects. will is \(will)")
+
   }
   
   

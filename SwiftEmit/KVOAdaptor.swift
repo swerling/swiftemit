@@ -6,6 +6,7 @@
 //  Copyright © 2015 Steven Swerling. All rights reserved.
 //
 
+/*
 import Foundation
 
 extension NSObject {
@@ -102,3 +103,4 @@ public class AdaptorForNSKVO: SwiftEmitNS {
   }
   
 }
+*/
