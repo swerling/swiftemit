@@ -8,48 +8,55 @@
 
 import Foundation
 
-// todo: make this generic, instead of forcing handlers to subclass Event.Base
-public typealias Handler = (EventInfo) -> ()
-
+public typealias Handler = (Event) -> ()
 public typealias EventTypeId = String
 
-public protocol Emitter: Hashable {
-  func on(typeId: AnyObject.Type, handler: Handler)
-  func emit(event: AnyObject) -> EventInfo?
-}
-
-public struct EventInfo {
-  var sender: AnyObject
-  var startTime: NSDate
-  var endTime: NSDate?
+public struct Event {
   var payload: AnyObject
+  var context: [String: Any]
 }
 
+public protocol Emitter: Hashable {
+  /**
+   For the current Emitter, call handler when event with payload of given type are emitted.
+   
+   - parameter type: Event type. Any object can be payload for a SwiftEmit event.
+   - parameter handler: a Handler, (EventInfo) -> (). Called when events with payload of given type are emitted.
+   
+   - returns: nada
+   */
+  func on(type: AnyObject.Type, handler: Handler)
+  func emit(payload: AnyObject) -> Event?
+}
+
+/**
+  Generic Emitter that emits events with payload AnyObject.
+  Adds the following to the event's context:
+    - "sender": the emitter firing the event
+    - "startTime": timestamp just before event
+    - "endTime": timestamp just after all handlers return
+*/
 public extension Emitter {
   
-  public func on(type: AnyObject.Type, handler: Handler) {
-    let typeid = EventMap.typeId(type) // bad?
-    EventMap.add(self, typeId: typeid, handler: handler)
+  public func on(payloadType: AnyObject.Type, handler: Handler) {
+    EventMap.add(self, typeId: EventMap.typeId(payloadType), handler: handler)
   }
   
-  func emit(event: AnyObject)  -> EventInfo? {
+  func emit(event: AnyObject)  -> Event? {
     
     guard let handlers = EventMap.handlers(self, event: event) else {
       return nil
     }
     
-    guard let sender = self as? AnyObject else { return nil }
-    var eventInfo = EventInfo(sender: sender,
-      startTime: NSDate(),
-      endTime: nil,
-      payload: event)
+    var event = Event(
+      payload: event,
+      context: ["startTime": NSDate() as Any,
+                "sender": self as Any])
     
-    for handler in handlers {
-      handler(eventInfo)
-    }
+    for handler in handlers { handler(event) }
     
-    eventInfo.endTime = NSDate()
-    return eventInfo
+    event.context["endTime"] = NSDate() as Any
+    return event
   }
   
 }

@@ -7,6 +7,21 @@ var str = "Hello, playground"
 var event2 = ValueChangeEvent(oldValue: 1, newValue: 2)
 print("e2: \(event2.self)")
 
+extension Event {
+  struct Blah {
+    var ho = "ho"
+  }
+}
+Event.Blah()
+let x = Event.Blah() as Any
+x.self
+
+if let y = x as? Event.Blah {
+  print(y.ho)
+}
+
+
+
 /*
 print(String(event1.dynamicType))
 print(String(event1.dynamicType))
