@@ -111,6 +111,39 @@ class SwiftEmitTests: XCTestCase {
     dynamic var iso: Float = 200
   }
   
+  func testCoreMotion() {
+    // uh oh. How? 
+    // Maybe just send mock events through NSOperationQ and call it a day?
+  }
+  
+  func testNotificationCenter() {
+    var proof:String? = nil
+    NSNotificationCenter.defaultCenter().swiftEmit("notifyme") { event in
+      proof = "Notified"
+    }
+    XCTAssert(proof == nil,
+      "should NOT have gotten NotificationCenter event, haven't started observer yet")
+    
+    // In following calls, doing multiple stopAll and startAll calls in a row
+    // because in SwiftEmit, calls to addObserver and removeObserver are idempotent
+    SwiftEmitNS.startAll()
+    SwiftEmitNS.startAll()
+    SwiftEmitNS.startAll()
+    NSNotificationCenter.defaultCenter().postNotificationName("notifyme", object: nil)
+    XCTAssert(proof == "Notified",
+      "should have gotten NotificationCenter event, handler should set proof to 'Notified'")
+    
+    // make sure stop is also idempotent
+    SwiftEmitNS.stopAll()
+    SwiftEmitNS.stopAll()
+    SwiftEmitNS.stopAll()
+    proof = "blah"
+    NSNotificationCenter.defaultCenter().postNotificationName("notifyme", object: nil)
+    XCTAssert(proof == "blah",
+      "should NOT have gotten NotificationCenter event, stopped observer")
+    
+  }
+  
   func testKVO() {
     print("Hey now")
     let camera = FakeCamera()

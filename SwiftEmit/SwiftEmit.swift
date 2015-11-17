@@ -68,7 +68,8 @@ public extension Emitter {
   
 }
 
-class EventMap {
+// TODO: make ref to Handlers weak
+private class EventMap {
   
   typealias EventTypeLookup = [EventTypeId: [Handler]]
   static var objectLookup = [Int: EventTypeLookup]()
