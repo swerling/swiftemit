@@ -6,7 +6,6 @@
 //  Copyright © 2015 Steven Swerling. All rights reserved.
 //
 
-/*
 import Foundation
 
 extension NSObject {
@@ -23,22 +22,38 @@ extension NSObject {
     context: UnsafeMutablePointer<Void>,
     handler: Handler) -> AdaptorForNSKVO
   {
+    let adaptor = AdaptorForNSKVO(
+      observee: self,
+      keyPath: kp,
+      context: context)
+    adaptor.on(Payload.KVO.self, run: handler)
+    return adaptor
+    /*
     return AdaptorForNSKVO(
       observee: self,
       keyPath: kp,
       context: context,
       handler: handler)
+*/
   }
 }
 
-public class KVOEvent: ValueChangeEvent {}
+extension Payload {
+  public struct KVO {
+    public let oldValue: AnyObject?
+    public let newValue: AnyObject?
+    public init(oldValue: AnyObject?, newValue: AnyObject?) {
+      self.oldValue = oldValue
+      self.newValue = newValue
+    }
+  }
+}
 
 public class AdaptorForNSKVO: SwiftEmitNS {
   
   let NullValue  = "__KVO_CHANGED_VALUE_WAS_NULL__"
   
   var context: UnsafeMutablePointer<Void>
-  var handler: Handler
   var keyPath: String
   var observee: NSObject
   var observing = false
@@ -47,12 +62,10 @@ public class AdaptorForNSKVO: SwiftEmitNS {
   
   init(observee: NSObject,
     keyPath: String,
-    context: UnsafeMutablePointer<Void>,
-    handler: Handler) {
+    context: UnsafeMutablePointer<Void>) {
     self.observee = observee
     self.keyPath = keyPath
     self.context = context
-    self.handler = handler
   }
   
   deinit {
@@ -99,8 +112,7 @@ public class AdaptorForNSKVO: SwiftEmitNS {
       if let nv = c[NSKeyValueChangeNewKey] { newVal = nv }
     }
     
-    handler(KVOEvent(oldValue: oldVal, newValue: newVal))
+    emit(Payload.KVO(oldValue: oldVal, newValue: newVal))
   }
   
 }
-*/

@@ -6,8 +6,6 @@
 //  Copyright © 2015 Steven Swerling. All rights reserved.
 //
 
-/*
-
 import Foundation
 
 //
@@ -21,30 +19,29 @@ import Foundation
 import Foundation
 import CoreMotion
 
-public class DeviceMotionEvent: BasicEvent {
-  public let motion: CMDeviceMotion?
-  public let error: NSError?
-  init(motion: CMDeviceMotion?, error: NSError?) {
-    self.motion = motion
-    self.error = error
+extension Payload {
+  public struct DeviceMotionEvent {
+    public let motion: CMDeviceMotion?
+    public let error: NSError?
+    public init(motion: CMDeviceMotion?, error: NSError?) {
+      self.motion = motion
+      self.error = error
+    }
   }
 }
 
 public class AdaptorForCoreMotion: SwiftEmitNS {
   
   let motionManager: CMMotionManager!
-  let handler: Handler
   let nsOpQueue: NSOperationQueue?
   let updateInterval: NSTimeInterval
   private var observing = false
   
   init(motionManager: CMMotionManager = CMMotionManager(),
     queue: NSOperationQueue? = NSOperationQueue.currentQueue(),
-    updateInterval: NSTimeInterval = 1.0,
-    handler: Handler)
+    updateInterval: NSTimeInterval = 1.0)
   {
     self.motionManager = motionManager
-    self.handler = handler
     self.nsOpQueue = queue
     self.updateInterval = updateInterval
   }
@@ -83,7 +80,7 @@ public class AdaptorForCoreMotion: SwiftEmitNS {
   }
   
   private func handleDeviceMotionUpdate(motion: CMDeviceMotion?, _ error: NSError?) {
-    handler(DeviceMotionEvent(motion: motion, error: error))
+    emit(Payload.DeviceMotionEvent(motion: motion, error: error))
   }
   
 }
@@ -95,12 +92,12 @@ extension CMMotionManager {
     handler: Handler)
     -> AdaptorForCoreMotion
   {
-    return AdaptorForCoreMotion(
+    let adaptor = AdaptorForCoreMotion(
       motionManager: self,
       queue: queue,
-      updateInterval: updateInterval,
-      handler: handler)
+      updateInterval: updateInterval)
+    adaptor.on(Payload.DeviceMotionEvent.self, run: handler)
+    return adaptor
   }
 }
   
-*/

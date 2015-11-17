@@ -12,8 +12,8 @@ public typealias Handler = (Event) -> ()
 public typealias EventTypeId = String
 
 public struct Event {
-  var payload: AnyObject
-  var context: [String: Any]
+  public var payload: Any
+  public var context: [String: Any]
 }
 
 public protocol Emitter: Hashable {
@@ -25,12 +25,12 @@ public protocol Emitter: Hashable {
    
    - returns: nada
    */
-  func on(type: AnyObject.Type, handler: Handler)
-  func emit(payload: AnyObject) -> Event?
+  func on(payloadType: Any.Type, run handler: Handler)
+  func emit(payload: Any) -> Event?
 }
 
 /**
-  Generic Emitter that emits events with payload AnyObject.
+  Generic Emitter that emits events with payload Any.
   Adds the following to the event's context:
     - "sender": the emitter firing the event
     - "startTime": timestamp just before event
@@ -38,11 +38,11 @@ public protocol Emitter: Hashable {
 */
 public extension Emitter {
   
-  public func on(payloadType: AnyObject.Type, handler: Handler) {
+  public func on(payloadType: Any.Type, run handler: Handler) {
     EventMap.add(self, typeId: EventMap.typeId(payloadType), handler: handler)
   }
   
-  func emit(event: AnyObject)  -> Event? {
+  func emit(event: Any)  -> Event? {
     
     guard let handlers = EventMap.handlers(self, event: event) else {
       return nil
@@ -62,15 +62,16 @@ public extension Emitter {
 }
 
 class EventMap {
+  
   typealias EventTypeLookup = [EventTypeId: [Handler]]
   static var objectLookup = [Int: EventTypeLookup]()
   
-  static func typeId(obj: AnyObject) -> EventTypeId {
-    return typeId(obj.dynamicType)
+  static func typeId(any: Any) -> EventTypeId {
+    return typeId(any.dynamicType)
   }
   
-  static func typeId(type: AnyObject.Type) -> EventTypeId {
-    return "\(type.self)"
+  static func typeId(anyType: Any.Type) -> EventTypeId {
+    return "\(anyType.self)"
   }
   
   static func add<T: Hashable>(object: T, typeId: EventTypeId, handler: Handler) {
@@ -88,7 +89,7 @@ class EventMap {
     print("Added \(ohash)")
   }
   
-  static func handlers<T: Emitter>(object: T, event: AnyObject) -> [Handler]? {
+  static func handlers<T: Emitter>(object: T, event: Any) -> [Handler]? {
     let ohash = object.hashValue
     guard let eventTypeToHandlers = objectLookup[ohash] else { return nil }
     //let typeid = "\(event.dynamicType.self)"

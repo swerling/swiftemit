@@ -15,6 +15,7 @@ extension Event {
 Event.Blah()
 let x = Event.Blah() as Any
 x.self
+x.dynamicType
 
 if let y = x as? Event.Blah {
   print(y.ho)

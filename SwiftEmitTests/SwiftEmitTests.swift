@@ -15,10 +15,10 @@ class TestEmitter: Emitter {
   var eventHandlers = [Handler]()
   var foo = "initial value of foo" {
     willSet {
-      emit(ValueWillChangeEvent(oldValue: foo, newValue: newValue, name: "val"))
+      emit(Payload.ValueWillChange(value: foo, newValue: newValue, name: "val"))
     }
     didSet {
-      emit(ValueChangeEvent(oldValue: oldValue, newValue: foo, name: "val"))
+      emit(Payload.ValueChange(oldValue: oldValue, value: foo, name: "val"))
     }
   }
 }
@@ -47,17 +47,17 @@ class SwiftEmitTests: XCTestCase {
     var will2 = "'will2' not called yet"
     var did = "'did' not called yet"
     
-    func handler1(eventInfo: Event) {
-      guard eventInfo.payload is ValueWillChangeEvent else { return }
+    func handler1(event: Event) {
+      guard event.payload is Payload.ValueWillChange else { return }
       will = "handler 1 will fire"
     }
     
-    emitter1.on(ValueWillChangeEvent.self, handler: handler1)
-    emitter1.on(ValueWillChangeEvent.self) { eventInfo in
+    emitter1.on(Payload.ValueWillChange.self, run: handler1)
+    emitter1.on(Payload.ValueWillChange.self) { event in
       will2 = "handler 1 will fire twice"
     }
-    emitter1.on(ValueChangeEvent.self) { event in
-      let payload = event.payload as? ValueChangeEvent
+    emitter1.on(Payload.ValueChange.self) { event in
+      let payload = event.payload as? Payload.ValueChange
       XCTAssert(payload != nil, "Expected payload to be ValueChangeEvent based on TestEmitter's didSet")
       let sender = event.context["sender"] as? TestEmitter
       XCTAssert(sender != nil, "Expected content['sender'] to be emitter1")
@@ -66,13 +66,13 @@ class SwiftEmitTests: XCTestCase {
     emitter1.foo = "hi"
     
     XCTAssert(will == "handler 1 will fire",
-      "expected handler 1 willSet to emit ValueWillChangeEvent. But 'will' is \(will)")
+      "expected handler 1 willSet to emit Payload.ValueWillChange. But 'will' is \(will)")
     XCTAssert(will2 == "handler 1 will fire twice",
       "expected handler 1 willSet to fire twice, since emitter was given 2 different on:handler: handlers. tests 2 handlers on same object and event type. But 'will2' is \(will2)")
     XCTAssert(did == "handler 1 did fire",
       "expected handler didSet to fire. tests 2 event types on one object. But 'did' is \(did)")
     
-    emitter2.on(ValueChangeEvent.self) { eventInfo in
+    emitter2.on(Payload.ValueChange.self) { event in
       did = "handler 2 fired"
     }
     emitter2.foo = "hi"  // set off events for emitter 2
@@ -85,9 +85,9 @@ class SwiftEmitTests: XCTestCase {
     let emitter = TestEmitter(h: 1)
     var proofHandlerFired = "did not fire yet"
     
-    emitter.on(ValueChangeEvent.self) { event in
+    emitter.on(Payload.ValueChange.self) { event in
       
-      let payload = event.payload as? ValueChangeEvent
+      let payload = event.payload as? Payload.ValueChange
       XCTAssert(payload != nil,
         "Expected payload to be ValueChangeEvent based on TestEmitter's didSet")
       

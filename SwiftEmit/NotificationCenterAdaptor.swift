@@ -25,30 +25,30 @@
 //  Copyright © 2015 spswerling. All rights reserved.
 //
 
-/*
 import Foundation
 
-typealias NotificationCenterEvent = BasicEvent
+extension Payload {
+  public struct NotificationCenterEvent{}
+}
 
 extension NSNotificationCenter {
   public func swiftEmit(eventName:String, handler: Handler)
     -> AdaptorForNSNotificationCenter
   {
-    return AdaptorForNSNotificationCenter(
-      noticationCenterEventName: eventName,
-      handler: handler)
+    let adaptor = AdaptorForNSNotificationCenter(
+      noticationCenterEventName: eventName)
+    adaptor.on(Payload.NotificationCenterEvent.self, run: handler)
+    return adaptor
   }
 }
 
 public class AdaptorForNSNotificationCenter: SwiftEmitNS {
   
   var observing = false
-  var handler: Handler
   var notificationCenterEventName: String
   
-  init(noticationCenterEventName name: String, handler: Handler) {
+  init(noticationCenterEventName name: String) {
     self.notificationCenterEventName = name
-    self.handler = handler
   }
   
   deinit {
@@ -78,8 +78,7 @@ public class AdaptorForNSNotificationCenter: SwiftEmitNS {
   }
   
   func handle() {
-    handler(NotificationCenterEvent())
+    emit(Payload.NotificationCenterEvent())
   }
   
 }
-*/

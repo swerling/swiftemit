@@ -9,7 +9,7 @@
 import Foundation
 
 // Eg. See NotificationCenterWrapper, CoreMotionWrapper, KVOWrapper
-public class SwiftEmitNS: NSObject {
+public class SwiftEmitNS: NSObject, Emitter {
   
   public static var all = [SwiftEmitNS]()
   
