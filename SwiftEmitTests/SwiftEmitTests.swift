@@ -58,9 +58,11 @@ class SwiftEmitTests: XCTestCase {
     }
     emitter1.on(Payload.ValueChange.self) { event in
       let payload = event.payload as? Payload.ValueChange
-      XCTAssert(payload != nil, "Expected payload to be ValueChangeEvent based on TestEmitter's didSet")
+      XCTAssert(payload != nil,
+        "Expected payload to be ValueChangeEvent based on TestEmitter's didSet")
       let sender = event.context["sender"] as? TestEmitter
-      XCTAssert(sender != nil, "Expected content['sender'] to be emitter1")
+      XCTAssert(sender != nil,
+        "Expected content['sender'] to be emitter1")
       did = "handler 1 did fire"
     }
     emitter1.foo = "hi"
@@ -76,7 +78,8 @@ class SwiftEmitTests: XCTestCase {
       did = "handler 2 fired"
     }
     emitter2.foo = "hi"  // set off events for emitter 2
-    XCTAssert(did == "handler 2 fired", "expected handler 2 to fire. tests object.hashValue -> Event.Type -> [Handler] map when you have different objects using same event type, make sure they are using different Handlers. 'did' is \(did)")
+    XCTAssert(did == "handler 2 fired",
+      "expected handler 2 to fire. tests object.hashValue -> Event.Type -> [Handler] map when you have different objects using same event type, make sure they are using different Handlers. 'did' is \(did)")
 
   }
   
@@ -102,6 +105,52 @@ class SwiftEmitTests: XCTestCase {
     
     XCTAssert(proofHandlerFired == "handler did fire",
       "just testing that handler fired at all. Main tests fo handler firing in testEventMap, since event context tests are inside of a handler")
+  }
+  
+  class FakeCamera: NSObject {
+    dynamic var iso: Float = 200
+  }
+  
+  func testKVO() {
+    print("Hey now")
+    let camera = FakeCamera()
+    camera.iso = 200
+    var proof:Float? = nil
+    camera.swiftEmitFloat("iso") { event in
+      guard let payload = event.payload as? Payload.KVO else { return }
+      proof = payload.newValue as? Float
+    }
+    
+    camera.iso = 300
+    XCTAssert(proof == nil,
+      "should NOT have gotten KVO event yet, did not yet SwiftEmitNS.startAll()")
+    
+    SwiftEmitNS.startAll()
+    camera.iso = 400
+    XCTAssert(proof == 400,
+      "should have gotten KVO event setting fake camera iso to 400")
+    
+    // In following calls, doing multiple stopAll and startAll calls in a row because in SwiftEmit, calls to KVO addObserver and removeObserver are idempotent
+    
+    SwiftEmitNS.startAll()
+    SwiftEmitNS.startAll()
+    SwiftEmitNS.startAll()
+    camera.iso = 400
+    XCTAssert(proof == 400,
+      "should have gotten KVO event setting fake camera iso to 400")
+    
+    SwiftEmitNS.stopAll()
+    SwiftEmitNS.stopAll()
+    SwiftEmitNS.stopAll()
+    camera.iso = 500
+    XCTAssert(proof == 400,
+      "should NOT have gotten KVO event, did SwiftEmitNS.stopAll()")
+    
+    SwiftEmitNS.startAll()
+    camera.iso = 700
+    XCTAssert(proof == 700,
+      "should have gotten KVO event setting fake camera iso to 700")
+    
   }
   
   /*

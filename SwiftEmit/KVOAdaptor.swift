@@ -28,13 +28,6 @@ extension NSObject {
       context: context)
     adaptor.on(Payload.KVO.self, run: handler)
     return adaptor
-    /*
-    return AdaptorForNSKVO(
-      observee: self,
-      keyPath: kp,
-      context: context,
-      handler: handler)
-*/
   }
 }
 

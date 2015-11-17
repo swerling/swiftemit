@@ -31,7 +31,7 @@ public protocol Emitter: Hashable {
 
 /**
   Generic Emitter that emits events with payload Any.
-  Adds the following to the event's context:
+  #emit Adds the following to the event's context:
     - "sender": the emitter firing the event
     - "startTime": timestamp just before event
     - "endTime": timestamp just after all handlers return
@@ -42,14 +42,21 @@ public extension Emitter {
     EventMap.add(self, typeId: EventMap.typeId(payloadType), handler: handler)
   }
   
-  func emit(event: Any)  -> Event? {
+  /**
+    Emit an event with the given payload.
+    #emit Adds the following to the event's context:
+      - "sender": the emitter firing the event
+      - "startTime": timestamp just before event
+      - "endTime": timestamp just after all handlers return
+  */
+  func emit(payload: Any)  -> Event? {
     
-    guard let handlers = EventMap.handlers(self, event: event) else {
+    guard let handlers = EventMap.handlers(self, payload: payload) else {
       return nil
     }
     
     var event = Event(
-      payload: event,
+      payload: payload,
       context: ["startTime": NSDate() as Any,
                 "sender": self as Any])
     
@@ -89,11 +96,10 @@ class EventMap {
     print("Added \(ohash)")
   }
   
-  static func handlers<T: Emitter>(object: T, event: Any) -> [Handler]? {
+  static func handlers<T: Emitter>(object: T, payload: Any) -> [Handler]? {
     let ohash = object.hashValue
     guard let eventTypeToHandlers = objectLookup[ohash] else { return nil }
-    //let typeid = "\(event.dynamicType.self)"
-    let typeid = typeId(event)
+    let typeid = typeId(payload)
     guard let handlers = eventTypeToHandlers[typeid] else { return nil }
     return handlers
   }

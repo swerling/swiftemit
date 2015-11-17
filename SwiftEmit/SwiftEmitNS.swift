@@ -13,6 +13,14 @@ public class SwiftEmitNS: NSObject, Emitter {
   
   public static var all = [SwiftEmitNS]()
   
+  public static func startAll() {
+    SwiftEmitNS.all.forEach {ns in ns.startObserving()}
+  }
+  
+  public static func stopAll() {
+    SwiftEmitNS.all.forEach {ns in ns.stopObserving()}
+  }
+  
   override init() {
     super.init()
     SwiftEmitNS.all.append(self)
