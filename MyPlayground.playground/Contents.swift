@@ -4,89 +4,58 @@ import UIKit
 import SwiftEmit
 
 var str = "Hello, playground"
-var event2 = ValueChangeEvent(oldValue: 1, newValue: 2)
-print("e2: \(event2.self)")
+["hi", "there"].contains("hio")
 
-extension Event {
-  struct Blah {
-    var ho = "ho"
-  }
-}
-Event.Blah()
-let x = Event.Blah() as Any
-x.self
-x.dynamicType
-
-if let y = x as? Event.Blah {
-  print(y.ho)
+class Cat {
+  var color = "red"
 }
 
-
-
-/*
-print(String(event1.dynamicType))
-print(String(event1.dynamicType))
-"\(event1.dynamicType)"
-"\(event1.dynamicType)".hashValue
-"event1.self"
- _stdlib_getDemangledTypeName(event1).hashValue
-
-struct EventClassKey: Hashable {
-  private let underlying: Event
-  init<T: Event>(_ e: T) {
-    underlying = e
-  }
-  
-  func toString() -> String {
-    return "\(underlying)"
-  }
-  //var hashValue: Int { return hashValueFunc() }
-  var hashValue: Int { return toString().hashValue }
-  func eql(y: EventClassKey) -> Bool {
-    return toString() == y.toString()
-  }
+struct Dog: Equatable {
+  var color = "red"
 }
 
-func ==(x: EventClassKey, y: EventClassKey) -> Bool {
-  return x.eql(y)
+func ==(d1: Dog, d2: Dog) -> Bool {
+  return d1.color == d2.color
 }
 
-
-var dict1: [EventClassKey: String] = [EventClassKey(event1): "e1", EventClassKey(event2): "e2"]
-
-print(dict1[EventClassKey(event1)])
-print(dict1[EventClassKey(event2)])
-
-struct AnyKey: Hashable {
-  private let underlying: [Any]
-  private let hashValueFunc: () -> Int
-  private let equalityFunc: (Any) -> Bool
-  
-  init<T: Hashable>(_ key: T) {
-    underlying = [key]
-    // Capture the key's hashability and equatability using closures.
-    // The Key shares the hash of the underlying value.
-    hashValueFunc = { key.hashValue }
-    
-    // The Key is equal to a Key of the same underlying type,
-    // whose underlying value is "==" to ours.
-    equalityFunc = {
-      if let other = $0 as? T {
-        return key == other
-      }
-      return false
-    }
-  }
-  
-  var hashValue: Int { return hashValueFunc() }
+func emitEqual<T: AnyObject>(thing1: T, _ thing2: T) -> Bool {
+  return thing1 === thing2
 }
 
-func ==(x: AnyKey, y: AnyKey) -> Bool {
-  return x.equalityFunc(y.underlying[0])
+func emitEqual<T: Equatable>(thing1: T, _ thing2: T) -> Bool {
+  return thing1 == thing2
 }
 
-var dict: [AnyKey: Int] = [AnyKey("foo"): 1, AnyKey(22): 2]
+func swiftEmitHashValue<T: AnyObject>(obj: T) -> Int {
+  return ObjectIdentifier(obj).hashValue
+}
 
-print(dict[AnyKey("foo")])
-print(dict[AnyKey(22)])
-*/
+func swiftEmitHashValue(d: Dog) -> Int {
+  return d.color.hashValue
+}
+
+let cat1 = Cat()
+let cat2 = Cat()
+let dog1 = Dog()
+let dog2 = Dog()
+var dog3 = Dog()
+dog3.color = "purple"
+
+swiftEmitHashValue(cat1)
+swiftEmitHashValue(cat2)
+swiftEmitHashValue(dog3)
+swiftEmitHashValue(dog2)
+
+emitEqual(cat1, cat2)
+emitEqual(cat1, cat1)
+emitEqual(dog1, dog1)
+emitEqual(dog1, dog2)
+emitEqual(dog1, dog3)
+emitEqual(dog2, dog3)
+emitEqual(dog3, dog3)
+
+cat1 === cat2
+//ObjectIdentifier(cat1).hashValue
+
+"ho"
+

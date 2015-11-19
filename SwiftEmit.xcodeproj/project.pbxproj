@@ -18,6 +18,12 @@
 		9B2D348F1BF504650090900C /* SwiftEmitNS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2D348D1BF504650090900C /* SwiftEmitNS.swift */; };
 		9B2D34911BF504B40090900C /* SwiftEmit.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 9B2D34901BF504B40090900C /* SwiftEmit.podspec */; };
 		9B2D34931BF642A50090900C /* AnyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2D34921BF642A50090900C /* AnyKey.swift */; };
+		9BB2A2E01BFE287C00883D2F /* Example1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2DF1BFE287C00883D2F /* Example1Tests.swift */; };
+		9BB2A2E21BFE3C4600883D2F /* StructEmitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E11BFE3C4600883D2F /* StructEmitTests.swift */; };
+		9BB2A2E41BFE5ADD00883D2F /* NSAdaptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */; };
+		9BB2A2E61BFE5BDA00883D2F /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E51BFE5BDA00883D2F /* TestHelpers.swift */; };
+		9BDD60811BFCD94E00A480F1 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 9BDD60801BFCD94E00A480F1 /* TODO */; };
+		9BDD60831BFCFD4B00A480F1 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 9BDD60821BFCFD4B00A480F1 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +52,12 @@
 		9B2D34901BF504B40090900C /* SwiftEmit.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SwiftEmit.podspec; sourceTree = "<group>"; };
 		9B2D34921BF642A50090900C /* AnyKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyKey.swift; sourceTree = "<group>"; };
 		9B2D34941BF644740090900C /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = SOURCE_ROOT; };
+		9BB2A2DF1BFE287C00883D2F /* Example1Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Example1Tests.swift; sourceTree = "<group>"; };
+		9BB2A2E11BFE3C4600883D2F /* StructEmitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructEmitTests.swift; sourceTree = "<group>"; };
+		9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSAdaptorTests.swift; sourceTree = "<group>"; };
+		9BB2A2E51BFE5BDA00883D2F /* TestHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		9BDD60801BFCD94E00A480F1 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+		9BDD60821BFCFD4B00A480F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +82,8 @@
 		9B0AA6421BF3AC6800F2A981 = {
 			isa = PBXGroup;
 			children = (
+				9BDD60801BFCD94E00A480F1 /* TODO */,
+				9BDD60821BFCFD4B00A480F1 /* README.md */,
 				9B2D34901BF504B40090900C /* SwiftEmit.podspec */,
 				9B0AA66B1BF3B18700F2A981 /* Boilerplate */,
 				9B0AA64E1BF3AC6800F2A981 /* SwiftEmit */,
@@ -103,6 +117,10 @@
 			isa = PBXGroup;
 			children = (
 				9B0AA65B1BF3AC6800F2A981 /* SwiftEmitTests.swift */,
+				9BB2A2E51BFE5BDA00883D2F /* TestHelpers.swift */,
+				9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */,
+				9BB2A2DF1BFE287C00883D2F /* Example1Tests.swift */,
+				9BB2A2E11BFE3C4600883D2F /* StructEmitTests.swift */,
 				9B0AA65D1BF3AC6800F2A981 /* Info.plist */,
 			);
 			path = SwiftEmitTests;
@@ -221,6 +239,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BDD60811BFCD94E00A480F1 /* TODO in Resources */,
 				9B2D34911BF504B40090900C /* SwiftEmit.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,6 +264,7 @@
 				9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */,
 				9B0AA6721BF3B44600F2A981 /* KVOAdaptor.swift in Sources */,
 				9B0AA66D1BF3B20900F2A981 /* Payloads.swift in Sources */,
+				9BDD60831BFCFD4B00A480F1 /* README.md in Sources */,
 				9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -253,7 +273,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BB2A2E01BFE287C00883D2F /* Example1Tests.swift in Sources */,
+				9BB2A2E61BFE5BDA00883D2F /* TestHelpers.swift in Sources */,
 				9B0AA65C1BF3AC6800F2A981 /* SwiftEmitTests.swift in Sources */,
+				9BB2A2E41BFE5ADD00883D2F /* NSAdaptorTests.swift in Sources */,
+				9BB2A2E21BFE3C4600883D2F /* StructEmitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

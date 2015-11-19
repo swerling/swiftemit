@@ -9,16 +9,25 @@
 import XCTest
 @testable import SwiftEmit
 
+enum EnumPayload {
+  case DidSet
+  case WillSet
+}
+
 class TestEmitter: Emitter {
   init(h: Int) { hashValue = h}
   var hashValue: Int = 0
-  var eventHandlers = [Handler]()
   var foo = "initial value of foo" {
     willSet {
       emit(Payload.ValueWillChange(value: foo, newValue: newValue, name: "val"))
     }
     didSet {
       emit(Payload.ValueChange(oldValue: oldValue, value: foo, name: "val"))
+    }
+  }
+  var enumFoo = "initial value of enumFoo" {
+    didSet {
+      emit(EnumPayload.DidSet)
     }
   }
 }
@@ -39,7 +48,7 @@ class SwiftEmitTests: XCTestCase {
   }*/
   
   
-  func testEventMap() {
+  func testBasic() {
     // Emitters must be hashable. When building the Handlers map, object hashValues are used to apply events to handlers
     let emitter1 = TestEmitter(h: 1) // ie. hashValue = 1
     let emitter2 = TestEmitter(h: 2) // ie. hashValue = 2
@@ -83,6 +92,71 @@ class SwiftEmitTests: XCTestCase {
 
   }
   
+  func testWithEnumPayload() {
+    let emitter = TestEmitter(h: 1) // ie. hashValue = 1
+    var did = ""
+    
+    func didHandler(event: Event) {
+      guard let payload = event.payload as? EnumPayload else {return}
+      did = "did fired: \(payload)"
+    }
+    
+    emitter.on(EnumPayload.self, run: didHandler)
+    emitter.enumFoo = "Hey"
+    XCTAssert(did == "did fired: DidSet",
+      "expected handler to fire with enum payload EnumPayload.DidSet. Did: '\(did)'")
+  }
+  
+  func testUnregister() {
+    let emitter = TestEmitter(h: 1)
+    var will = ""
+    var did = ""
+    var did2 = ""
+    emitter.on(Payload.ValueChange.self) { event in
+      did = "did changed"
+    }
+    emitter.on(Payload.ValueChange.self) { event in
+      did2 = "did2 changed"
+    }
+    emitter.on(Payload.ValueWillChange.self) { event in
+      will = "will changed"
+    }
+    SwiftEmitNS.startAll()
+    emitter.foo = "hey"
+    XCTAssert(did == "did changed",
+      "Bad test setup, expected ValueChange handler to fire")
+    XCTAssert(did2 == "did2 changed",
+      "Bad test setup, expected ValueChange handler to fire")
+    XCTAssert(will == "will changed",
+      "Bad test setup, expected ValueWillChange handler to fire")
+    
+    // Now remove ValueChange event handlers. ValueWillChange should still fire
+    did = ""
+    did2 = ""
+    will = ""
+    emitter.removeEmitHandlers(Payload.ValueChange.self)
+    emitter.foo = "ho"
+    XCTAssert(did == "",
+      "Removed all ValueChange handlers, expected var to be unchanged")
+    XCTAssert(did2 == "",
+      "Removed all ValueChange handlers, expected var to be unchanged")
+    XCTAssert(will == "will changed",
+      "Removing ValueChange handlers should not effect ValueWillChange handler, expected ValueWillChange handler to fire and alter 'will'")
+    
+    // Now remove all the handlers, make sure events no longer fire
+    did = ""
+    did2 = ""
+    will = ""
+    emitter.removeAllEmitHandlers()
+    emitter.foo = "ho"
+    XCTAssert(did == "",
+      "Removed all event handlers, expected var to be unchanged")
+    XCTAssert(did2 == "",
+      "Removed all event handlers, expected var to be unchanged")
+    XCTAssert(will == "",
+      "Removed all event handlers, expected var to be unchanged")
+  }
+  
   func testEventContext() {
     
     let emitter = TestEmitter(h: 1)
@@ -107,90 +181,4 @@ class SwiftEmitTests: XCTestCase {
       "just testing that handler fired at all. Main tests fo handler firing in testEventMap, since event context tests are inside of a handler")
   }
   
-  class FakeCamera: NSObject {
-    dynamic var iso: Float = 200
-  }
-  
-  func testCoreMotion() {
-    // uh oh. How? 
-    // Maybe just send mock events through NSOperationQ and call it a day?
-  }
-  
-  func testNotificationCenter() {
-    var proof:String? = nil
-    NSNotificationCenter.defaultCenter().swiftEmit("notifyme") { event in
-      proof = "Notified"
-    }
-    XCTAssert(proof == nil,
-      "should NOT have gotten NotificationCenter event, haven't started observer yet")
-    
-    // In following calls, doing multiple stopAll and startAll calls in a row
-    // because in SwiftEmit, calls to addObserver and removeObserver are idempotent
-    SwiftEmitNS.startAll()
-    SwiftEmitNS.startAll()
-    SwiftEmitNS.startAll()
-    NSNotificationCenter.defaultCenter().postNotificationName("notifyme", object: nil)
-    XCTAssert(proof == "Notified",
-      "should have gotten NotificationCenter event, handler should set proof to 'Notified'")
-    
-    // make sure stop is also idempotent
-    SwiftEmitNS.stopAll()
-    SwiftEmitNS.stopAll()
-    SwiftEmitNS.stopAll()
-    proof = "blah"
-    NSNotificationCenter.defaultCenter().postNotificationName("notifyme", object: nil)
-    XCTAssert(proof == "blah",
-      "should NOT have gotten NotificationCenter event, stopped observer")
-    
-  }
-  
-  func testKVO() {
-    print("Hey now")
-    let camera = FakeCamera()
-    camera.iso = 200
-    var proof:Float? = nil
-    camera.swiftEmitFloat("iso") { event in
-      guard let payload = event.payload as? Payload.KVO else { return }
-      proof = payload.newValue as? Float
-    }
-    
-    camera.iso = 300
-    XCTAssert(proof == nil,
-      "should NOT have gotten KVO event yet, did not yet SwiftEmitNS.startAll()")
-    
-    SwiftEmitNS.startAll()
-    camera.iso = 400
-    XCTAssert(proof == 400,
-      "should have gotten KVO event setting fake camera iso to 400")
-    
-    // In following calls, doing multiple stopAll and startAll calls in a row because in SwiftEmit, calls to KVO addObserver and removeObserver are idempotent
-    
-    SwiftEmitNS.startAll()
-    SwiftEmitNS.startAll()
-    SwiftEmitNS.startAll()
-    camera.iso = 400
-    XCTAssert(proof == 400,
-      "should have gotten KVO event setting fake camera iso to 400")
-    
-    SwiftEmitNS.stopAll()
-    SwiftEmitNS.stopAll()
-    SwiftEmitNS.stopAll()
-    camera.iso = 500
-    XCTAssert(proof == 400,
-      "should NOT have gotten KVO event, did SwiftEmitNS.stopAll()")
-    
-    SwiftEmitNS.startAll()
-    camera.iso = 700
-    XCTAssert(proof == 700,
-      "should have gotten KVO event setting fake camera iso to 700")
-    
-  }
-  
-  /*
-  func testPerformanceExample() {
-    measureBlock {
-        // Put the code you want to measure the time of here.
-    }
-  }*/
-    
 }

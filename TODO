@@ -1,0 +1,15 @@
+1. Use ObjectIdentifier to get rid of Hashable Requirement on AnyObject.
+
+Will still need it for Struct emitters though.
+
+  func swiftEmitHashValue<T: AnyObject>(obj: T) -> Int {
+    return ObjectIdentifier(obj).hashValue
+  }
+
+  func swiftEmitHashValue(d: Dog) -> Int {
+    return d.color.hashValue
+  }
+
+  So instead of ohash, use swiftEmitHashValue(x)
+
+2. Docs

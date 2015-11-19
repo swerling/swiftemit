@@ -6,6 +6,7 @@
 //  Copyright © 2015 Steven Swerling. All rights reserved.
 //
 
+/*
 import Foundation
 
 // https://devforums.apple.com/message/1045616
@@ -37,3 +38,4 @@ struct AnyKey: Hashable {
 func ==(x: AnyKey, y: AnyKey) -> Bool {
   return x.equalityFunc(y.underlying[0])
 }
+*/
