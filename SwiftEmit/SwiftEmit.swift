@@ -21,7 +21,8 @@ public class Event {
   }
 }
 
-public protocol Emitter: Hashable {
+public protocol Emitter: class {
+  
   /**
    For the current Emitter, call handler when event with payload of given type are emitted.
    
@@ -45,16 +46,30 @@ public protocol Emitter: Hashable {
   func emit(payload: Any) -> Event?
   func removeAllEmitHandlers()
   func removeEmitHandlers(payloadType: Any.Type)
+  
+  /**
+  Like hashValue, for swiftEmit. For AnyObject (class objects), this is already
+  done, and uses the ObjectIdentifier(object).hashValue. For Structs, you 
+  have to implment this.
+  */
+  func swiftEmitId() -> Int
+  
 }
 
 /**
   Generic Emitter that emits events with payload Any.
+ 
   #emit Adds the following to the event's context:
     - "sender": the emitter firing the event
     - "startTime": timestamp just before event
     - "endTime": timestamp just after all handlers return
 */
 public extension Emitter {
+  
+  //func swiftEmitId<T: AnyObject>(obj: T) -> Int {
+  func swiftEmitId() -> Int {
+    return ObjectIdentifier(self).hashValue
+  }
   
   /**
   Register an event handler.
@@ -152,19 +167,19 @@ private class EventMap {
   }
   
   // TODO: test
-  static func removeAll<T: Hashable>(object: T) {
-    let ohash = object.hashValue
+  static func removeAll<T: Emitter>(object: T) {
+    let ohash = object.swiftEmitId()
     objectLookup[ohash] = nil
   }
   
   // TODO: test
-  static func remove<T: Hashable>(object: T, typeId: EventTypeId) {
-    let ohash = object.hashValue
+  static func remove<T: Emitter>(object: T, typeId: EventTypeId) {
+    let ohash = object.swiftEmitId()
     objectLookup[ohash]?[typeId] = nil
   }
   
-  static func add<T: Hashable>(object: T, typeId: EventTypeId, handler: Handler) {
-    let ohash = object.hashValue
+  static func add<T: Emitter>(object: T, typeId: EventTypeId, handler: Handler) {
+    let ohash = object.swiftEmitId()
     if var eventTypeLookup = objectLookup[ohash] {
       if eventTypeLookup[typeId] != nil {
         objectLookup[ohash]?[typeId]?.append(handler)
@@ -179,7 +194,7 @@ private class EventMap {
   }
   
   static func handlers<T: Emitter>(object: T, payload: Any) -> [Handler]? {
-    let ohash = object.hashValue
+    let ohash = object.swiftEmitId()
     guard let eventTypeToHandlers = objectLookup[ohash] else { return nil }
     let typeid = typeId(payload)
     guard let handlers = eventTypeToHandlers[typeid] else { return nil }

@@ -31,12 +31,6 @@ class Shape: Emitter {
       }
     }
   }
-  var hashValue: Int { return ObjectIdentifier(self).hashValue } // Emitter
-}
-
-// Emitter must be Hashable and thus Equatable
-func ==(x: Shape, y: Shape) -> Bool {
-  return x.color == y.color
 }
 
 class Example1Tests: XCTestCase {
@@ -59,7 +53,7 @@ class Example1Tests: XCTestCase {
     }
     
     // Register handler for event by passing function
-    func validateShape(var event: Event) {
+    func validateShape(event: Event) {
       guard let payload = event.payload as? RequestShapeValidation else { return }
       print("The proposed color for myObject is \(payload.shape.color)")
       if !["red", "blue", "green"].contains(payload.shape.color) {
@@ -69,19 +63,8 @@ class Example1Tests: XCTestCase {
     shape.on(RequestShapeValidation.self, run: validateShape)
     
     // Do something that fires an event
-    print("\(shape.color) -> \(shape.hashValue)")
     shape.color = "purple"
-    print("\(shape.color) -> \(shape.hashValue)")
     shape.color = "green"
-    print("\(shape.color) -> \(shape.hashValue)")
   }
   
-  /*
-  func testPerformanceExample() {
-    // This is an example of a performance test case.
-    self.measureBlock {
-      // Put the code you want to measure the time of here.
-    }
-  }*/
-    
 }

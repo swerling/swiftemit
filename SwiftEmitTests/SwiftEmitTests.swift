@@ -15,8 +15,6 @@ enum EnumPayload {
 }
 
 class TestEmitter: Emitter {
-  init(h: Int) { hashValue = h}
-  var hashValue: Int = 0
   var foo = "initial value of foo" {
     willSet {
       emit(Payload.ValueWillChange(value: foo, newValue: newValue, name: "val"))
@@ -32,10 +30,6 @@ class TestEmitter: Emitter {
   }
 }
   
-func ==(x: TestEmitter, y: TestEmitter) -> Bool {
-  return x.hashValue == y.hashValue
-}
-
 class SwiftEmitTests: XCTestCase {
   
   /*
@@ -50,8 +44,8 @@ class SwiftEmitTests: XCTestCase {
   
   func testBasic() {
     // Emitters must be hashable. When building the Handlers map, object hashValues are used to apply events to handlers
-    let emitter1 = TestEmitter(h: 1) // ie. hashValue = 1
-    let emitter2 = TestEmitter(h: 2) // ie. hashValue = 2
+    let emitter1 = TestEmitter()
+    let emitter2 = TestEmitter()
     var will = "'will' not called yet"
     var will2 = "'will2' not called yet"
     var did = "'did' not called yet"
@@ -93,7 +87,7 @@ class SwiftEmitTests: XCTestCase {
   }
   
   func testWithEnumPayload() {
-    let emitter = TestEmitter(h: 1) // ie. hashValue = 1
+    let emitter = TestEmitter() // ie. hashValue = 1
     var did = ""
     
     func didHandler(event: Event) {
@@ -108,7 +102,7 @@ class SwiftEmitTests: XCTestCase {
   }
   
   func testUnregister() {
-    let emitter = TestEmitter(h: 1)
+    let emitter = TestEmitter()
     var will = ""
     var did = ""
     var did2 = ""
@@ -159,7 +153,7 @@ class SwiftEmitTests: XCTestCase {
   
   func testEventContext() {
     
-    let emitter = TestEmitter(h: 1)
+    let emitter = TestEmitter()
     var proofHandlerFired = "did not fire yet"
     
     emitter.on(Payload.ValueChange.self) { event in

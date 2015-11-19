@@ -10,7 +10,7 @@ import Foundation
 import XCTest
 @testable import SwiftEmit
 
-
+/*
 class StructEmitTests: XCTestCase {
 
   // An example class that emits events (Equatable conformance func == 
@@ -82,3 +82,4 @@ class StructEmitTests: XCTestCase {
 func ==(x: StructEmitTests.Shape, y: StructEmitTests.Shape) -> Bool {
   return x.sides == y.sides
 }
+*/
