@@ -14,7 +14,7 @@ enum EnumPayload {
   case WillSet
 }
 
-class TestEmitter: Emitter {
+class TestEmitter: EmitterClass {
   var foo = "initial value of foo" {
     willSet {
       emit(Payload.ValueWillChange(value: foo, newValue: newValue, name: "val"))
@@ -31,16 +31,6 @@ class TestEmitter: Emitter {
 }
   
 class SwiftEmitTests: XCTestCase {
-  
-  /*
-  override func setUp() {
-    super.setUp()
-  }
-  
-  override func tearDown() {
-    super.tearDown()
-  }*/
-  
   
   func testBasic() {
     // Emitters must be hashable. When building the Handlers map, object hashValues are used to apply events to handlers

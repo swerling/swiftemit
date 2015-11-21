@@ -19,7 +19,7 @@
 		9B2D34911BF504B40090900C /* SwiftEmit.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 9B2D34901BF504B40090900C /* SwiftEmit.podspec */; };
 		9B2D34931BF642A50090900C /* AnyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2D34921BF642A50090900C /* AnyKey.swift */; };
 		9BB2A2E01BFE287C00883D2F /* Example1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2DF1BFE287C00883D2F /* Example1Tests.swift */; };
-		9BB2A2E21BFE3C4600883D2F /* StructEmitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E11BFE3C4600883D2F /* StructEmitTests.swift */; };
+		9BB2A2E21BFE3C4600883D2F /* StructEmitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E11BFE3C4600883D2F /* StructEmitterTests.swift */; };
 		9BB2A2E41BFE5ADD00883D2F /* NSAdaptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */; };
 		9BDD60811BFCD94E00A480F1 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 9BDD60801BFCD94E00A480F1 /* TODO */; };
 		9BDD60831BFCFD4B00A480F1 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 9BDD60821BFCFD4B00A480F1 /* README.md */; };
@@ -52,7 +52,7 @@
 		9B2D34921BF642A50090900C /* AnyKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyKey.swift; sourceTree = "<group>"; };
 		9B2D34941BF644740090900C /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = SOURCE_ROOT; };
 		9BB2A2DF1BFE287C00883D2F /* Example1Tests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Example1Tests.swift; sourceTree = "<group>"; };
-		9BB2A2E11BFE3C4600883D2F /* StructEmitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructEmitTests.swift; sourceTree = "<group>"; };
+		9BB2A2E11BFE3C4600883D2F /* StructEmitterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StructEmitterTests.swift; sourceTree = "<group>"; };
 		9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSAdaptorTests.swift; sourceTree = "<group>"; };
 		9BDD60801BFCD94E00A480F1 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		9BDD60821BFCFD4B00A480F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -117,7 +117,7 @@
 				9B0AA65B1BF3AC6800F2A981 /* SwiftEmitTests.swift */,
 				9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */,
 				9BB2A2DF1BFE287C00883D2F /* Example1Tests.swift */,
-				9BB2A2E11BFE3C4600883D2F /* StructEmitTests.swift */,
+				9BB2A2E11BFE3C4600883D2F /* StructEmitterTests.swift */,
 				9B0AA65D1BF3AC6800F2A981 /* Info.plist */,
 			);
 			path = SwiftEmitTests;
@@ -273,7 +273,7 @@
 				9BB2A2E01BFE287C00883D2F /* Example1Tests.swift in Sources */,
 				9B0AA65C1BF3AC6800F2A981 /* SwiftEmitTests.swift in Sources */,
 				9BB2A2E41BFE5ADD00883D2F /* NSAdaptorTests.swift in Sources */,
-				9BB2A2E21BFE3C4600883D2F /* StructEmitTests.swift in Sources */,
+				9BB2A2E21BFE3C4600883D2F /* StructEmitterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,7 +18,7 @@ struct RequestShapeValidation {
 }
 
 // An example class that emits events
-class Shape: Emitter {
+class Shape: EmitterClass {
   var color: String = "red" {
     didSet {
       let event = emit(RequestShapeValidation(shape: self))
@@ -34,14 +34,6 @@ class Shape: Emitter {
 }
 
 class Example1Tests: XCTestCase {
-    
-  override func setUp() {
-    super.setUp()
-  }
-    
-  override func tearDown() {
-    super.tearDown()
-  }
     
   func testExample1() {
     var shape = Shape()
@@ -63,8 +55,9 @@ class Example1Tests: XCTestCase {
     shape.on(RequestShapeValidation.self, run: validateShape)
     
     // Do something that fires an event
-    shape.color = "purple"
-    shape.color = "green"
+    shape.color = "purple" // -> RequestShapeValidation event vetos the change,
+                           //    "Color is all wrong: purple"
+    shape.color = "green"  // -> "The new color for shape is green"
   }
   
 }

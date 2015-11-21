@@ -1,61 +1,56 @@
 //: Playground - noun: a place where people can play
 
-import UIKit
+//import UIKit
 import SwiftEmit
 
-var str = "Hello, playground"
-["hi", "there"].contains("hio")
+// Some example event payloads
 
-class Cat {
-  var color = "red"
+struct ColorChange { var color: String }
+
+struct RequestShapeValidation {
+  var shape: Shape
 }
 
-struct Dog: Equatable {
-  var color = "red"
+// An example class that emits events. The RequestShapeValidation event will
+// take advantage of the Event.context to veto a color change. The ColorChange
+// event will be used to announce a successful color change
+
+class Shape: ObjectEmitter {
+  var color: String = "red" {
+    didSet {
+      let event = emit(RequestShapeValidation(shape: self))
+      if let reason = event?.context["invalid"] as? String {
+        self.color = oldValue
+        print("Invalid: \(reason)")
+      }
+      else {
+        emit(ColorChange(color: color))
+      }
+    }
+  }
 }
 
-func ==(d1: Dog, d2: Dog) -> Bool {
-  return d1.color == d2.color
+var shape = Shape()
+
+// Register handler for event using trailing closure syntax:
+shape.on(ColorChange.self) { event in
+  guard let payload = event.payload as? ColorChange else { return }
+  print("The new color for shape is \(payload.color)")
 }
 
-func emitEqual<T: AnyObject>(thing1: T, _ thing2: T) -> Bool {
-  return thing1 === thing2
+// Register handler for event by passing function
+func validateShape(event: Event) {
+  guard let payload = event.payload as? RequestShapeValidation else { return }
+  print("The proposed color for myObject is \(payload.shape.color)")
+  if !["red", "blue", "green"].contains(payload.shape.color) {
+    event.context["invalid"] = "Color is all wrong: \(payload.shape.color)"
+  }
 }
+shape.on(RequestShapeValidation.self, run: validateShape)
 
-func emitEqual<T: Equatable>(thing1: T, _ thing2: T) -> Bool {
-  return thing1 == thing2
-}
-
-func swiftEmitHashValue<T: AnyObject>(obj: T) -> Int {
-  return ObjectIdentifier(obj).hashValue
-}
-
-func swiftEmitHashValue(d: Dog) -> Int {
-  return d.color.hashValue
-}
-
-let cat1 = Cat()
-let cat2 = Cat()
-let dog1 = Dog()
-let dog2 = Dog()
-var dog3 = Dog()
-dog3.color = "purple"
-
-swiftEmitHashValue(cat1)
-swiftEmitHashValue(cat2)
-swiftEmitHashValue(dog3)
-swiftEmitHashValue(dog2)
-
-emitEqual(cat1, cat2)
-emitEqual(cat1, cat1)
-emitEqual(dog1, dog1)
-emitEqual(dog1, dog2)
-emitEqual(dog1, dog3)
-emitEqual(dog2, dog3)
-emitEqual(dog3, dog3)
-
-cat1 === cat2
-//ObjectIdentifier(cat1).hashValue
-
-"ho"
-
+// Do something that fires an event
+print("Going to try purple")
+shape.color = "purple" // -> RequestShapeValidation event vetos the change,
+                       //    'validateShape' fires: "Color is all wrong: purple"
+print("Going to try green")
+shape.color = "green"  // -> "The new color for shape is green"

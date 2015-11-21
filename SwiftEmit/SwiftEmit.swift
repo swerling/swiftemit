@@ -11,6 +11,16 @@ import Foundation
 public typealias Handler = (Event) -> ()
 public typealias EventTypeId = String
 
+/*
+public func swiftEmitId(obj: AnyObject) -> Int {
+  return ObjectIdentifier(obj).hashValue
+}
+
+public func swiftEmitId(obj: Any) -> Int {
+  return 1
+}
+*/
+
 public class Event {
   public var payload: Any
   public typealias ContextDict = [String: Any]
@@ -21,7 +31,8 @@ public class Event {
   }
 }
 
-public protocol Emitter: class {
+public protocol Emitter {
+  func swiftEmitId() -> Int
   
   /**
    For the current Emitter, call handler when event with payload of given type are emitted.
@@ -52,9 +63,10 @@ public protocol Emitter: class {
   done, and uses the ObjectIdentifier(object).hashValue. For Structs, you 
   have to implment this.
   */
-  func swiftEmitId() -> Int
-  
+  //func swiftEmitId<T>(T: Any) -> Int
+  //func swiftEmitId(obj: Self) -> Int
 }
+
 
 /**
   Generic Emitter that emits events with payload Any.
@@ -64,12 +76,8 @@ public protocol Emitter: class {
     - "startTime": timestamp just before event
     - "endTime": timestamp just after all handlers return
 */
+
 public extension Emitter {
-  
-  //func swiftEmitId<T: AnyObject>(obj: T) -> Int {
-  func swiftEmitId() -> Int {
-    return ObjectIdentifier(self).hashValue
-  }
   
   /**
   Register an event handler.
@@ -153,6 +161,17 @@ public extension Emitter {
   
 }
 
+// just to juxtapose to ObjectEmitter
+public typealias EmitterStruct = Emitter
+
+// Plain old emitter, but with a default swiftEmitId based on the ObjectIdentifier
+public protocol EmitterClass: class, Emitter { }
+public extension EmitterClass {
+  public func swiftEmitId() -> Int{
+    return ObjectIdentifier(self).hashValue
+  }
+}
+
 private class EventMap {
   
   typealias EventTypeLookup = [EventTypeId: [Handler]]
@@ -168,12 +187,14 @@ private class EventMap {
   
   // TODO: test
   static func removeAll<T: Emitter>(object: T) {
+    //let ohash = object.swiftEmitId()
     let ohash = object.swiftEmitId()
     objectLookup[ohash] = nil
   }
   
   // TODO: test
   static func remove<T: Emitter>(object: T, typeId: EventTypeId) {
+    //let ohash = object.swiftEmitId()
     let ohash = object.swiftEmitId()
     objectLookup[ohash]?[typeId] = nil
   }

@@ -1,16 +1,44 @@
 # SwiftEmit
 
-PubSub for Swift. Unifies and simplifies event handling for swift objects, 
-NS KVO events, NSNotificationCenter events, etc.
+Observer pattern for Swift, with similarities to nodejs EventEmitters and 
+smalltalk 'Announcements'.
 
-Define some event payload types:
+Unifies and simplifies event handling for swift objects, NS KVO events, 
+NSNotificationCenter events, etc.
+
+##### Define some event payload types
 ```
 class ColorChange {
   color: String
 }
 ```
 
-Register handlers for those events:
+Payloads can **be instances of Any type, but typically will
+by objects (class instances), structs, or enum values. 
+
+
+##### Emit those payloads 
+
+```
+class MyClass: EmitterClass {
+...
+  func myFunc() {
+    ...
+    emit(ColorChange(color: color))
+    ...
+```
+
+For classes, adding the extension EmitterClass is enough to make it an Emitter.
+
+Structs can be emitters too, by adding the 'Emitter' extension. 
+But there is a little extra work and some gotchas, so see StructEmitTests.swift 
+for an illustrative example.
+
+##### Register handlers of events
+Register handler of events carrying payloads of a given _type_. 
+The payloads emitted above will be in the event's 'payload' field. 
+
+Either pass a function or use trailing closure syntax to register a handler for an event:
 ```
 
 // using trailing closure syntax:
@@ -28,17 +56,7 @@ myEmitter.on(ColorChange.self, run: colorChanged)
 
 ```
 
-Emit events:
-```
-  emit(ColorChange(color: color))
-```
-
-To emit events, a class or struct must be an Emitter, which means it must be 
-Hashable (and thus Equatable). 
-
-Be very careful mapping handlers to structs. If a struct's attributes change, 
-then in all likelihood its identity changes too, and thus which handlers 
-that SwiftEmit associates with it (see StructEmitTests.swift in this project).
+##### NS KVO Events
 
 There are adaptors for KVO and NotificationCenter events that use the same 
 handler styles as above, eg:
@@ -67,35 +85,19 @@ NOTE: call SwiftEmitNS.startAll() and stopAll() somewhere in your app to start/s
 - iOS 9.0+ 
 - todo: not yet tested on Mac OS X 10.9+ / tvOS 9.0+ / watchOS 2.0+
 
-## Features/Comparison
+## Features
 
-
-* Pub-Sub pattern similar to nodejs Emitter, but...
+* Observer pattern similar to nodejs Emitter, but...
 * ...Emits objects (or structs) instead of string events (concept copied from 'Announcements' in smalltalk). Eg. see http://pharo.gemtalksystems.com/book/LanguageAndLibraries/announcements/
 * Simple syntax to emit a payload, register/deregister event handlers
-* Event contains: the payload, the context. The payload is the thing emitted, the context is a Dictionary with string keys and arbitrary values. Handlers can side-effect the context.
-
-    ```
-     func myHandler(event: Event) {
-       guard let payload = event.payload as? SomePayload else { return }
-       guard let sender = event.context["sender"] as? SomeClass else {return }
-       ...do something with payload, eg:....
-       if isInvalid(payload.something) { 
-          event.context["invalid"] = "some reason" 
-       }
-     }
-     myObject.on(SomePayload.self, run: myHandler)
-    ```
-
-* Any Hashable class event emitter
-
-* Any Hashable struct can be event emitter, but be careful, if struct changes, it's handler mappings may change too (see StructEmitTests.swift)
-
-* Instances of any struct or class or enums can be payloads.
-
+* Event contains: the payload, the context.  Handlers can side-effect the context 
+(see examples below)
+* Instances of Any can by payloads, typically class instances or enum values
 * Adaptors for NS KVO, NotificationCenter, NSOperationQueue, where handlers take the same form as regular SwiftEmit events. (see examples below)
 
-## Examples
+## More Examples
+
+With a little more detail.
 
 ### KVO Events:
 
@@ -115,7 +117,11 @@ SwiftEmit:
     SwiftEmitNS.stopAll() 
   ```
 
-compare to the standard Swift equivalent for example above:
+Calls to SwiftEmitNS.startAll() and stopAll() are idempotent -- it will do no
+harm to call them twice in a row, so various app awake and sleep events can be
+hooked without worrying about crashing during registration/deregistration.
+
+Compare to the standard Swift equivalent for example above:
 
     private var isoContext: Float = 1 
     ....
@@ -194,56 +200,78 @@ Standard Swift equivalent for example above:
 
 ### Your Own Class
 
-(this example can be copy/pasted into an xcode playground)
+This example can be copy/pasted into an xcode 7.x playground. 
+
+Note the handlers are the exact same form as for the KVO and NotificationCenter
+handlers, (SwiftEmit.Event) -> ()
 
 ```swift
+import SwiftEmit
 
-//Your own event payload class or struct
-struct AboutToChangeColor { }
-struct ColorChanged {
-  var color: String
+// Some example event types. Instances of these will be emitted as event.payloads
+
+struct ColorChange { var color: String }
+
+struct RequestShapeValidation {
+  var shape: Shape
 }
 
-// Make your class or struct an Emitter (Hashable), and have it emit events when
-// one of it's variables changes
-struct Cat: Emitter {
-  var hashValue: Int { return name.hashValue } // Emitters must be Hashable
-  var name: String = "Snowball"
-  var color = "white" {
-    willSet {
-      emit(AboutToChangeColor())
-    }
+// An example class that emits events. The RequestShapeValidation event will
+// take advantage of the Event.context to allow associated handlers to veto 
+// a color change. The ColorChange event will be used to announce a successful 
+// color change.
+
+class Shape: ObjectEmitter {
+  var color: String = "red" {
     didSet {
-      emit(ColorChanged(color: color))
+      let event = emit(RequestShapeValidation(shape: self))
+      if let reason = event?.context["invalid"] as? String {
+        self.color = oldValue
+        print("Invalid: \(reason)")
+      }
+      else {
+        emit(ColorChange(color: color))
+      }
     }
   }
 }
 
-// Emitters are Hashable, and thus must be Equatable:
-func ==(x: Cat, y: Cat) -> Bool {
-  return x.hashValue == y.hashValue
+// Ok, event emitters done. Now lets create an object give it some 
+// SwiftEmit.Event handlers
+var shape = Shape()
+
+// Register handler for event using trailing closure syntax. This one will
+// announce the change of shape's color:
+shape.on(ColorChange.self) { event in
+  guard let payload = event.payload as? ColorChange else { return }
+  print("The new color for shape is \(payload.color)")
 }
 
-// Ok, now lets get a cat to observe
-var myCat = Cat()
+// Declare invalid any color change that is not red, blue, or green.
+// This one shows how to register a handler for an event by passing a function 
+// (as opposed to using trailing closure syntax) 
+func validateShape(event: Event) {
+  guard let payload = event.payload as? RequestShapeValidation else { return }
 
-// Have another object observe the events by passing a function handler...
+  print("The proposed color for myObject is \(payload.shape.color)")
 
-func catAboutToChange(event: Event) {
-  guard event.payload is AboutToChangeColor else { return }
-  guard let cat = event.context["sender"] as? Cat else {return }
-  print("\(cat.name) about to change color?!")
+  if !["red", "blue", "green"].contains(payload.shape.color) {
+    event.context["invalid"] = "Color is all wrong: \(payload.shape.color)"
+  }
+
 }
+shape.on(RequestShapeValidation.self, run: validateShape)
 
-myCat.on(AboutToChangeColor.self, run: catAboutToChange)
+// Change the color to something invalid. The validateShape function 
+// will reject it: "Color is all wrong: purple"
+print("Going to try purple")
+shape.color = "purple" 
 
-//...or, have another object observe the events by using trailing closure  syntax
-myCat.on(ColorChanged.self) { event in
-  guard let payload = event.payload as? ColorChanged else { return }
-  guard let cat = event.context["sender"] as? Cat else {return }
-  print("\(cat.name) is now \(payload.color)?!! It's a miracle!")
-}
+// Change the color to green
+// The closure listening for ColorChange events will announce that
+// "The new color for shape is green"
+print("Going to try green")
+shape.color = "green"  // -> "The new color for shape is green"
 
-myCat.color = "blue" // trigger AboutToChangeColor and ColorChanged handlers
 ```
 

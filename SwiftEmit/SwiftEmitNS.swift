@@ -9,7 +9,7 @@
 import Foundation
 
 // Eg. See NotificationCenterWrapper, CoreMotionWrapper, KVOWrapper
-public class SwiftEmitNS: NSObject, Emitter {
+public class SwiftEmitNS: NSObject, EmitterClass {
   
   public static var all = [SwiftEmitNS]()
   
@@ -35,3 +35,6 @@ public class SwiftEmitNS: NSObject, Emitter {
   
 }
 
+public func swiftEmitId(obj: SwiftEmitNS) -> Int {
+  return obj.hashValue
+}

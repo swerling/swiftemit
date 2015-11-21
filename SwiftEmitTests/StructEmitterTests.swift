@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 @testable import SwiftEmit
 
-/*
 class StructEmitTests: XCTestCase {
 
   // An example class that emits events (Equatable conformance func == 
@@ -24,13 +23,18 @@ class StructEmitTests: XCTestCase {
       }
     }
     var color = "red"
-    var hashValue: Int {
-      return sides.hashValue
-    } // Emitter
+    
+    // Based on this, from the perspective of SwiftEmit, structs are identified
+    // (or maybe 'categorized') by virtue of their number of sides. So when the
+    // sides var is set above to x, the handler that fires depends on which handler
+    // was mapped to a struct with x sides
+    func swiftEmitId() -> Int {
+      return sides
+    }
+    
   }
 
   struct ShapeChange { var shape: Shape }
-
 
   override func setUp() {
     super.setUp()
@@ -45,34 +49,34 @@ class StructEmitTests: XCTestCase {
       guard let payload = event.payload as? ShapeChange else { return }
       print("\(payload.shape.color) shape fired register\(sides)SidedShape")
     }
-    func register3SidedShape(event: Event) { handleShapeChange(3, event) }
-    func register4SidedShape(event: Event) { handleShapeChange(4, event) }
-    func register5SidedShape(event: Event) { handleShapeChange(5, event) }
+    func beA3SidedShape(event: Event) { handleShapeChange(3, event) }
+    func beA4SidedShape(event: Event) { handleShapeChange(4, event) }
+    func beA5SidedShape(event: Event) { handleShapeChange(5, event) }
     
     var redShape = Shape(sides: 3, color: "red")
     var greenShape = Shape(sides: 4, color: "green")
     var blueShape = Shape(sides: 5, color: "blue")
     
     // Register handler for event using trailing closure syntax:
-    Shape(sides: 3, color: "red").on(ShapeChange.self, run: register3SidedShape)
-    Shape(sides: 4, color: "red").on(ShapeChange.self, run: register4SidedShape)
-    Shape(sides: 5, color: "red").on(ShapeChange.self, run: register5SidedShape)
+    Shape(sides: 3, color: "red").on(ShapeChange.self, run: beA3SidedShape)
+    Shape(sides: 4, color: "red").on(ShapeChange.self, run: beA4SidedShape)
+    Shape(sides: 5, color: "red").on(ShapeChange.self, run: beA5SidedShape)
     
     // Counterintuitive, but when structs chage, they are changing which
     // handlers are associated with them. Structs are values, not refs, and
     // changing their attributes changes there identity:
     
-    redShape.sides = 3 // Fires register3SidedShape
-    greenShape.sides = 3 // Fires register3SidedShape
-    blueShape.sides = 3 // Fires register3SidedShape
+    redShape.sides = 3 // Fires beA3SidedShape
+    greenShape.sides = 3 // Fires beA3SidedShape
+    blueShape.sides = 3 // Fires beA3SidedShape
     
-    redShape.sides = 4 // Fires register4SidedShape
-    greenShape.sides = 4 // Fires register4SidedShape
-    blueShape.sides = 4 // Fires register4SidedShape
+    redShape.sides = 4 // Fires beA4SidedShape
+    greenShape.sides = 4 // Fires beA4SidedShape
+    blueShape.sides = 4 // Fires beA4SidedShape
     
-    redShape.sides = 5 // Fires register5SidedShape
-    greenShape.sides = 5 // Fires register5SidedShape
-    blueShape.sides = 5 // Fires register5SidedShape
+    redShape.sides = 5 // Fires beA5SidedShape
+    greenShape.sides = 5 // Fires beA5SidedShape
+    blueShape.sides = 5 // Fires beA5SidedShape
   }
   
   
@@ -82,4 +86,3 @@ class StructEmitTests: XCTestCase {
 func ==(x: StructEmitTests.Shape, y: StructEmitTests.Shape) -> Bool {
   return x.sides == y.sides
 }
-*/
