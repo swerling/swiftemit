@@ -149,12 +149,10 @@ public extension Emitter {
     return event
   }
   
-  // TODO: test this
   public func removeAllEmitHandlers() {
     EventMap.removeAll(self)
   }
   
-  // TODO: test this
   public func removeEmitHandlers(payloadType: Any.Type) {
     EventMap.remove(self, typeId: EventMap.typeId(payloadType))
   }
@@ -185,16 +183,12 @@ private class EventMap {
     return "\(anyType.self)"
   }
   
-  // TODO: test
   static func removeAll<T: Emitter>(object: T) {
-    //let ohash = object.swiftEmitId()
     let ohash = object.swiftEmitId()
     objectLookup[ohash] = nil
   }
   
-  // TODO: test
   static func remove<T: Emitter>(object: T, typeId: EventTypeId) {
-    //let ohash = object.swiftEmitId()
     let ohash = object.swiftEmitId()
     objectLookup[ohash]?[typeId] = nil
   }
