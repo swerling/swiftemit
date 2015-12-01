@@ -40,8 +40,8 @@ class StructEmitTests: XCTestCase {
 
   func testStructEmit() {
     func handleShapeChange(sides: Int, _ event: Event) {
-      guard let payload = event.payload as? ShapeChange else { return }
-      print("\(payload.shape.color) shape fired register\(sides)SidedShape")
+      guard let event = event as? ShapeChange else { return }
+      print("\(event.shape.color) shape fired register\(sides)SidedShape")
     }
     func beA3SidedShape(event: Event) { handleShapeChange(3, event) }
     func beA4SidedShape(event: Event) { handleShapeChange(4, event) }

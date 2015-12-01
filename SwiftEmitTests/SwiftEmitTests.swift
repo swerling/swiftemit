@@ -9,7 +9,7 @@
 import XCTest
 @testable import SwiftEmit
 
-enum EnumPayload {
+enum EnumEvent {
   case DidSet
   case WillSet
 }
@@ -17,15 +17,15 @@ enum EnumPayload {
 class TestEmitter: EmitterClass {
   var foo = "initial value of foo" {
     willSet {
-      emit(Payload.ValueWillChange(value: foo, newValue: newValue, name: "val"))
+      emit(Events.ValueWillChange(value: foo, newValue: newValue, name: "val"))
     }
     didSet {
-      emit(Payload.ValueChange(oldValue: oldValue, value: foo, name: "val"))
+      emit(Events.ValueChange(oldValue: oldValue, value: foo, name: "val"))
     }
   }
   var enumFoo = "initial value of enumFoo" {
     didSet {
-      emit(EnumPayload.DidSet)
+      emit(EnumEvent.DidSet)
     }
   }
 }
@@ -41,33 +41,30 @@ class SwiftEmitTests: XCTestCase {
     var did = "'did' not called yet"
     
     func handler1(event: Event) {
-      guard event.payload is Payload.ValueWillChange else { return }
+      guard event is Events.ValueWillChange else { return }
       will = "handler 1 will fire"
     }
     
-    emitter1.on(Payload.ValueWillChange.self, run: handler1)
-    emitter1.on(Payload.ValueWillChange.self) { event in
+    emitter1.on(Events.ValueWillChange.self, run: handler1)
+    emitter1.on(Events.ValueWillChange.self) { event in
       will2 = "handler 1 will fire twice"
     }
-    emitter1.on(Payload.ValueChange.self) { event in
-      let payload = event.payload as? Payload.ValueChange
-      XCTAssert(payload != nil,
-        "Expected payload to be ValueChangeEvent based on TestEmitter's didSet")
-      let sender = event.context["sender"] as? TestEmitter
-      XCTAssert(sender != nil,
-        "Expected content['sender'] to be emitter1")
+    emitter1.on(Events.ValueChange.self) { event in
+      let event = event as? Events.ValueChange
+      XCTAssert(event != nil,
+        "Expected event to be ValueChangeEvent based on TestEmitter's didSet")
       did = "handler 1 did fire"
     }
     emitter1.foo = "hi"
     
     XCTAssert(will == "handler 1 will fire",
-      "expected handler 1 willSet to emit Payload.ValueWillChange. But 'will' is \(will)")
+      "expected handler 1 willSet to emit Events.ValueWillChange. But 'will' is \(will)")
     XCTAssert(will2 == "handler 1 will fire twice",
       "expected handler 1 willSet to fire twice, since emitter was given 2 different on:handler: handlers. tests 2 handlers on same object and event type. But 'will2' is \(will2)")
     XCTAssert(did == "handler 1 did fire",
       "expected handler didSet to fire. tests 2 event types on one object. But 'did' is \(did)")
     
-    emitter2.on(Payload.ValueChange.self) { event in
+    emitter2.on(Events.ValueChange.self) { event in
       did = "handler 2 fired"
     }
     emitter2.foo = "hi"  // set off events for emitter 2
@@ -76,19 +73,19 @@ class SwiftEmitTests: XCTestCase {
 
   }
   
-  func testWithEnumPayload() {
+  func testWithEnumEvent() {
     let emitter = TestEmitter() // ie. hashValue = 1
     var did = ""
     
     func didHandler(event: Event) {
-      guard let payload = event.payload as? EnumPayload else {return}
-      did = "did fired: \(payload)"
+      guard let event = event as? EnumEvent else {return}
+      did = "did fired: \(event)"
     }
     
-    emitter.on(EnumPayload.self, run: didHandler)
+    emitter.on(EnumEvent.self, run: didHandler)
     emitter.enumFoo = "Hey"
     XCTAssert(did == "did fired: DidSet",
-      "expected handler to fire with enum payload EnumPayload.DidSet. Did: '\(did)'")
+      "expected handler to fire with enum event EnumEvent.DidSet. Did: '\(did)'")
   }
   
   func testUnregister() {
@@ -96,13 +93,13 @@ class SwiftEmitTests: XCTestCase {
     var will = ""
     var did = ""
     var did2 = ""
-    emitter.on(Payload.ValueChange.self) { event in
+    emitter.on(Events.ValueChange.self) { event in
       did = "did changed"
     }
-    emitter.on(Payload.ValueChange.self) { event in
+    emitter.on(Events.ValueChange.self) { event in
       did2 = "did2 changed"
     }
-    emitter.on(Payload.ValueWillChange.self) { event in
+    emitter.on(Events.ValueWillChange.self) { event in
       will = "will changed"
     }
     SwiftEmitNS.startAll()
@@ -118,7 +115,7 @@ class SwiftEmitTests: XCTestCase {
     did = ""
     did2 = ""
     will = ""
-    emitter.removeEmitHandlers(Payload.ValueChange.self)
+    emitter.removeEmitHandlers(Events.ValueChange.self)
     emitter.foo = "ho"
     XCTAssert(did == "",
       "Removed all ValueChange handlers, expected var to be unchanged")
@@ -146,15 +143,11 @@ class SwiftEmitTests: XCTestCase {
     let emitter = TestEmitter()
     var proofHandlerFired = "did not fire yet"
     
-    emitter.on(Payload.ValueChange.self) { event in
+    emitter.on(Events.ValueChange.self) { event in
       
-      let payload = event.payload as? Payload.ValueChange
-      XCTAssert(payload != nil,
-        "Expected payload to be ValueChangeEvent based on TestEmitter's didSet")
-      
-      let sender = event.context["sender"] as? TestEmitter
-      XCTAssert(sender != nil,
-        "Expected content['sender'] to be emitter1")
+      let event = event as? Events.ValueChange
+      XCTAssert(event != nil,
+        "Expected event to be ValueChangeEvent based on TestEmitter's didSet")
       
       proofHandlerFired = "handler did fire"
     }

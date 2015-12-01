@@ -68,7 +68,7 @@ class NSAdaptorTests: XCTestCase {
     
     // INT
     device.swiftEmitInt(Int(), keyPath: "intVar") { event in
-      proof = (event.payload as? Payload.KVO)?.newValue as? Int
+      proof = (event as? Events.KVO)?.newValue as? Int
     }
     SwiftEmitNS.startAll()
     device.intVar = -100
@@ -77,7 +77,7 @@ class NSAdaptorTests: XCTestCase {
     
     // UINT
     device.swiftEmitUInt(UInt(), keyPath: "uintVar") { event in
-      proof = (event.payload as? Payload.KVO)?.newValue as? Int
+      proof = (event as? Events.KVO)?.newValue as? Int
     }
     SwiftEmitNS.startAll()
     device.intVar = 100
@@ -86,7 +86,7 @@ class NSAdaptorTests: XCTestCase {
     
     // INT8
     device.swiftEmitInt(Int8(), keyPath: "int8Var") { event in
-      proof = (event.payload as? Payload.KVO)?.newValue as? Int
+      proof = (event as? Events.KVO)?.newValue as? Int
     }
     SwiftEmitNS.startAll()
     device.int8Var = -8
@@ -95,7 +95,7 @@ class NSAdaptorTests: XCTestCase {
 
     // UINT8
     device.swiftEmitUInt(UInt8(), keyPath: "uint8Var") { event in
-      proof = (event.payload as? Payload.KVO)?.newValue as? Int
+      proof = (event as? Events.KVO)?.newValue as? Int
     }
     SwiftEmitNS.startAll()
     device.uint8Var = 8
@@ -104,7 +104,7 @@ class NSAdaptorTests: XCTestCase {
     
     // INT16
     device.swiftEmitInt(Int16(), keyPath: "int16Var") { event in
-      proof = (event.payload as? Payload.KVO)?.newValue as? Int
+      proof = (event as? Events.KVO)?.newValue as? Int
     }
     SwiftEmitNS.startAll()
     device.int16Var = -16
@@ -113,7 +113,7 @@ class NSAdaptorTests: XCTestCase {
     
     // UINT16
     device.swiftEmitUInt(UInt16(), keyPath: "uint16Var") { event in
-      proof = (event.payload as? Payload.KVO)?.newValue as? Int
+      proof = (event as? Events.KVO)?.newValue as? Int
     }
     SwiftEmitNS.startAll()
     device.uint16Var = 2
@@ -126,8 +126,8 @@ class NSAdaptorTests: XCTestCase {
     device.boolVar = false
     var proof:Bool? = nil
     device.swiftEmitBool("boolVar") { event in
-      guard let payload = event.payload as? Payload.KVO else { return }
-      proof = payload.newValue as? Bool // tests below look for this
+      guard let event = event as? Events.KVO else { return }
+      proof = event.newValue as? Bool // tests below look for this
     }
     SwiftEmitNS.startAll()
     device.boolVar = true
@@ -140,9 +140,9 @@ class NSAdaptorTests: XCTestCase {
     device.floatVar = 200
     var proof:Float? = nil
     device.swiftEmitFloat("floatVar") { event in
-      guard let payload = event.payload as? Payload.KVO else { return }
+      guard let event = event as? Events.KVO else { return }
       
-      proof = payload.newValue as? Float // tests below look for this
+      proof = event.newValue as? Float // tests below look for this
     }
     
     device.floatVar = 300

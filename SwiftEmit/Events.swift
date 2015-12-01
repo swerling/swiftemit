@@ -14,10 +14,10 @@ public class BasicEvent {
 
 
 /** 
-  The payload class is for namespacing some stock payload types
-  These events are mostly here for tests, and to provide typical usage of event payloads.
+  The Events class is for namespacing only for some stock event types.
+  These events are mostly here for tests, and to provide typical usage of events.
 */
-public class Payload {
+public class Events {
   
   /**
     Info about any value change

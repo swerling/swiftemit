@@ -26,7 +26,7 @@ extension NSObject {
    Example:
    
         device.swiftEmitInt(Int8(), keyPath: "myInt8Var") { event in
-          let x = (event.payload as? Payload.KVO)?.newValue as? Int
+          let x = (event as? Events.KVO)?.newValue as? Int
           print("The value is \(x)")
         }
    
@@ -45,7 +45,7 @@ extension NSObject {
    Example:
    
         device.swiftEmitInt(UInt8(), keyPath: "myUInt8Var") { event in
-          let x = (event.payload as? Payload.KVO)?.newValue as? Int
+          let x = (event as? Events.KVO)?.newValue as? Int
           print("The value is \(x)")
         }
    
@@ -83,12 +83,12 @@ extension NSObject {
       observee: self,
       keyPath: kp,
       context: context)
-    adaptor.on(Payload.KVO.self, run: handler)
+    adaptor.on(Events.KVO.self, run: handler)
     return adaptor
   }
 }
 
-extension Payload {
+extension Events {
   public struct KVO {
     public let oldValue: AnyObject?
     public let newValue: AnyObject?
@@ -162,7 +162,7 @@ public class AdaptorForNSKVO: SwiftEmitNS {
       if let nv = c[NSKeyValueChangeNewKey] { newVal = nv }
     }
     
-    emit(Payload.KVO(oldValue: oldVal, newValue: newVal))
+    emit(Events.KVO(oldValue: oldVal, newValue: newVal))
   }
   
 }

@@ -1,15 +1,34 @@
-1. Use ObjectIdentifier to get rid of Hashable Requirement on AnyObject.
+1. Get rid of Context, instead:
 
-Will still need it for Struct emitters though.
+  1. Get rid of context, use IVs instead
+  2. Add is a parent and children to Event:
 
-  func swiftEmitHashValue<T: AnyObject>(obj: T) -> Int {
-    return ObjectIdentifier(obj).hashValue
+      var parent: Event?
+      var children = [Event]()
+
+  * Create a thread local variable that holds the currently processed event. Clear it when event processed, and emit a log message about the event
+
+  * If a new event comes in before current event is cleared, add cur event as
+  parent of the new event, and new event as child to parent. Indent when
+  emitting log message
+
+
+2. Trying to figure out how to use generics on Event, so that you don't have
+the redundant guard at the top of every handler.
+
+Instead of this:
+
+  func myFunc(event: Event) {
+    guard let event = event as? ValueChange else { return }
+    if event.oldValue...
   }
 
-  func swiftEmitHashValue(d: Dog) -> Int {
-    return d.color.hashValue
+Want this:
+
+  func myFunc(event: ValueChange) {
+    if event.oldValue...
   }
 
-  So instead of ohash, use swiftEmitHashValue(x)
+Having fooled around with this, one big problem is the mapping table technique. How to keep a map of handlers each with their own signiture?
 
-2. Docs
+3. Docs

@@ -10,21 +10,26 @@ import XCTest
 @testable import SwiftEmit
 
 
-// Some example event payloads
+// Some example events
 struct ColorChange { var color: String }
 
-struct RequestShapeValidation {
+class RequestShapeValidation {
   var shape: Shape
+  var invalidReason: String?
+  init(shape: Shape) {
+    self.shape = shape
+  }
 }
 
 // An example class that emits events
 class Shape: EmitterClass {
   var color: String = "red" {
     didSet {
-      let event = emit(RequestShapeValidation(shape: self))
-      if let reason = event?.context["invalid"] as? String {
+      let event = RequestShapeValidation(shape: self)
+      emit(event)
+      if event.invalidReason != nil {
         self.color = oldValue
-        print("Invalid: \(reason)")
+        print("Invalid: \(event.invalidReason)")
       }
       else {
         emit(ColorChange(color: color))
@@ -40,16 +45,16 @@ class Example1Tests: XCTestCase {
     
     // Register handler for event using trailing closure syntax:
     shape.on(ColorChange.self) { event in
-      guard let payload = event.payload as? ColorChange else { return }
-      print("The new color for shape is \(payload.color)")
+      guard let event = event as? ColorChange else { return }
+      print("The new color for shape is \(event.color)")
     }
     
     // Register handler for event by passing function
     func validateShape(event: Event) {
-      guard let payload = event.payload as? RequestShapeValidation else { return }
-      print("The proposed color for myObject is \(payload.shape.color)")
-      if !["red", "blue", "green"].contains(payload.shape.color) {
-        event.context["invalid"] = "Color is all wrong: \(payload.shape.color)"
+      guard let event = event as? RequestShapeValidation else { return }
+      print("The proposed color for myObject is \(event.shape.color)")
+      if !["red", "blue", "green"].contains(event.shape.color) {
+        event.invalidReason = "Color is all wrong: \(event.shape.color)"
       }
     }
     shape.on(RequestShapeValidation.self, run: validateShape)

@@ -10,71 +10,40 @@ import Foundation
 
 public typealias Handler = (Event) -> ()
 public typealias EventTypeId = String
-
-/*
-public func swiftEmitId(obj: AnyObject) -> Int {
-  return ObjectIdentifier(obj).hashValue
-}
-
-public func swiftEmitId(obj: Any) -> Int {
-  return 1
-}
-*/
-
-public class Event {
-  public var payload: Any
-  public typealias ContextDict = [String: Any]
-  public var context: ContextDict
-  public init(payload: Any, context: ContextDict = ContextDict()) {
-    self.payload = payload
-    self.context = context
-  }
-}
+public typealias Event = Any
 
 public protocol Emitter {
   func swiftEmitId() -> Int
   
   /**
-   For the current Emitter, call handler when event with payload of given type are emitted.
+   For the current Emitter, call handler when events of given type are emitted.
    
-   - parameter type: Event type. Any object can be payload for a SwiftEmit event.
-   - parameter handler: a Handler, (EventInfo) -> (). Called when events with payload of given type are emitted.
+   - parameter type: Event type. Any object be a SwiftEmit event.
+   - parameter handler: a Handler, (Event) -> (). Called when events of given type are emitted.
    
    - returns: nada
    */
-  func on(payloadType: Any.Type, run handler: Handler)
+  func on(eventType: Any.Type, run handler: Handler)
   
   /**
-   Fire an event with the given payload. Will return an event containing the 
-   payload and the filled in event context. 
-   
-   Handlers may choose to side effect the context in arbitrary fashion. The Emitter will typically put things like 'sender', 'startTime', 'endTime' in the context (it's up to the Emitter).
-   
-   - parameter payload: Any. Typically a type or struct that can be interrogated
-   
-   - returns: an Event (containing the payload and the event context).
+   Fire an event, ie a class instance, struct, or enum value
    */
-  func emit(payload: Any) -> Event?
-  func removeAllEmitHandlers()
-  func removeEmitHandlers(payloadType: Any.Type)
+  func emit(event: Event)
   
   /**
-  Like hashValue, for swiftEmit. For AnyObject (class objects), this is already
-  done, and uses the ObjectIdentifier(object).hashValue. For Structs, you 
-  have to implment this.
-  */
-  //func swiftEmitId<T>(T: Any) -> Int
-  //func swiftEmitId(obj: Self) -> Int
+   Todo: doc
+   */
+  func removeAllEmitHandlers()
+  
+  /**
+   Todo: doc
+   */
+  func removeEmitHandlers(eventType: Any.Type)
 }
 
 
 /**
-  Generic Emitter that emits events with payload Any.
- 
-  #emit Adds the following to the event's context:
-    - "sender": the emitter firing the event
-    - "startTime": timestamp just before event
-    - "endTime": timestamp just after all handlers return
+  Generic Emitter that emits Events.
 */
 
 public extension Emitter {
@@ -93,68 +62,50 @@ public extension Emitter {
      
        // example of passing a closure using trailing closure syntax
        myObject.on(ToggleActive.self) { event in
-         guard let payload = event.payload as ToggleActive else { return }
-         if payload.active { 
+         guard let event = event as ToggleActive else { return }
+         if event.active {
            someLabel.text = "It's on!"
          } else {
            someLabel.text = ""
          }
        }
    
-  - Parameter payloadType: A class or struct (not an instance, but the class itself, eg. MyPayloadClass.self, or MyPayloadStruct.self)
+  - Parameter eventType: A class or struct (not an instance, but the class itself, eg. MyEventClass.self, or MyEventStruct.self)
  
   - Parameter handler: A closure or function with sig (Event) -> ()
    
   - Returns: void
    
   */
-  public func on(payloadType: Any.Type, run handler: Handler) {
-    EventMap.add(self, typeId: EventMap.typeId(payloadType), handler: handler)
+  public func on(eventType: Any.Type, run handler: Handler) {
+    EventMap.add(self, typeId: EventMap.typeId(eventType), handler: handler)
   }
   
   /**
-  Emit an event with the given payload.
- 
-  Emit Adds the following to the event's context:
-    * "sender": the emitter firing the event
-    * "startTime": timestamp just before event
-    * "endTime": timestamp just after all handlers return
+  Emit an event.
  
   Example:
  
-       emit(SomePayloadStructOrClass())
+       emit(SomeEventStructOrClass())
  
-       emit(SwiftEmit.Payload.ValueChange(oldValue: oldValue,
+       emit(SwiftEmit.Events.ValueChange(oldValue: oldValue,
                                           value: myvar,
                                           name: 'myvar'))
- - Parameter payload: Just about anything you want can be a payload. Typically an instance of a class or struct.
- 
- - Returns: if successful, an Event object with the payload, and the context filled in with "sender", "startTime", "endTime". if unsuccessful, nil.
-   
+   - Parameter event: Just about anything you want can be an event. Typically an instance of a class or a struct.
   */
-  func emit(payload: Any)  -> Event? {
-    
-    guard let handlers = EventMap.handlers(self, payload: payload) else {
-      return nil
+  func emit(event: Event) {
+    guard let handlers = EventMap.handlers(self, event: event) else {
+      return
     }
-    
-    let event = Event(
-      payload: payload,
-      context: ["startTime": NSDate() as Any,
-                "sender": self as Any])
-    
     for handler in handlers { handler(event) }
-    
-    event.context["endTime"] = NSDate() as Any
-    return event
   }
   
   public func removeAllEmitHandlers() {
     EventMap.removeAll(self)
   }
   
-  public func removeEmitHandlers(payloadType: Any.Type) {
-    EventMap.remove(self, typeId: EventMap.typeId(payloadType))
+  public func removeEmitHandlers(eventType: Any.Type) {
+    EventMap.remove(self, typeId: EventMap.typeId(eventType))
   }
   
 }
@@ -208,10 +159,10 @@ private class EventMap {
     // print("Added \(ohash)")
   }
   
-  static func handlers<T: Emitter>(object: T, payload: Any) -> [Handler]? {
+  static func handlers<T: Emitter>(object: T, event: Event) -> [Handler]? {
     let ohash = object.swiftEmitId()
     guard let eventTypeToHandlers = objectLookup[ohash] else { return nil }
-    let typeid = typeId(payload)
+    let typeid = typeId(event)
     guard let handlers = eventTypeToHandlers[typeid] else { return nil }
     return handlers
   }

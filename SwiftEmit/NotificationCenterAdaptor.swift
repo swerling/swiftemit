@@ -27,7 +27,7 @@
 
 import Foundation
 
-extension Payload {
+extension Events {
   public struct NotificationCenterEvent{}
 }
 
@@ -37,7 +37,7 @@ extension NSNotificationCenter {
   {
     let adaptor = AdaptorForNSNotificationCenter(
       noticationCenterEventName: eventName)
-    adaptor.on(Payload.NotificationCenterEvent.self, run: handler)
+    adaptor.on(Events.NotificationCenterEvent.self, run: handler)
     return adaptor
   }
 }
@@ -78,7 +78,7 @@ public class AdaptorForNSNotificationCenter: SwiftEmitNS {
   }
   
   func handle() {
-    emit(Payload.NotificationCenterEvent())
+    emit(Events.NotificationCenterEvent())
   }
   
 }

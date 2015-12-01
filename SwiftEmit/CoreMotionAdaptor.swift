@@ -19,7 +19,7 @@ import Foundation
 import Foundation
 import CoreMotion
 
-extension Payload {
+extension Events {
   public struct DeviceMotionEvent {
     public let motion: CMDeviceMotion?
     public let error: NSError?
@@ -80,7 +80,7 @@ public class AdaptorForCoreMotion: SwiftEmitNS {
   }
   
   private func handleDeviceMotionUpdate(motion: CMDeviceMotion?, _ error: NSError?) {
-    emit(Payload.DeviceMotionEvent(motion: motion, error: error))
+    emit(Events.DeviceMotionEvent(motion: motion, error: error))
   }
   
 }
@@ -96,7 +96,7 @@ extension CMMotionManager {
       motionManager: self,
       queue: queue,
       updateInterval: updateInterval)
-    adaptor.on(Payload.DeviceMotionEvent.self, run: handler)
+    adaptor.on(Events.DeviceMotionEvent.self, run: handler)
     return adaptor
   }
 }

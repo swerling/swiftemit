@@ -11,7 +11,7 @@
 		9B0AA6571BF3AC6800F2A981 /* SwiftEmit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B0AA64C1BF3AC6800F2A981 /* SwiftEmit.framework */; };
 		9B0AA65C1BF3AC6800F2A981 /* SwiftEmitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA65B1BF3AC6800F2A981 /* SwiftEmitTests.swift */; };
 		9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */; };
-		9B0AA66D1BF3B20900F2A981 /* Payloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA66C1BF3B20900F2A981 /* Payloads.swift */; };
+		9B0AA66D1BF3B20900F2A981 /* Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA66C1BF3B20900F2A981 /* Events.swift */; };
 		9B0AA6721BF3B44600F2A981 /* KVOAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6711BF3B44600F2A981 /* KVOAdaptor.swift */; };
 		9B0AA6741BF3C22400F2A981 /* NotificationCenterAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6731BF3C22400F2A981 /* NotificationCenterAdaptor.swift */; };
 		9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */; };
@@ -43,7 +43,7 @@
 		9B0AA65B1BF3AC6800F2A981 /* SwiftEmitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEmitTests.swift; sourceTree = "<group>"; };
 		9B0AA65D1BF3AC6800F2A981 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftEmit.swift; sourceTree = "<group>"; };
-		9B0AA66C1BF3B20900F2A981 /* Payloads.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Payloads.swift; sourceTree = "<group>"; };
+		9B0AA66C1BF3B20900F2A981 /* Events.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Events.swift; sourceTree = "<group>"; };
 		9B0AA6711BF3B44600F2A981 /* KVOAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KVOAdaptor.swift; sourceTree = "<group>"; };
 		9B0AA6731BF3C22400F2A981 /* NotificationCenterAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenterAdaptor.swift; sourceTree = "<group>"; };
 		9B0AA6751BF3C2AC00F2A981 /* CoreMotionAdaptor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreMotionAdaptor.swift; sourceTree = "<group>"; };
@@ -103,7 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				9B0AA6661BF3AF6600F2A981 /* SwiftEmit.swift */,
-				9B0AA66C1BF3B20900F2A981 /* Payloads.swift */,
+				9B0AA66C1BF3B20900F2A981 /* Events.swift */,
 				9B2D34921BF642A50090900C /* AnyKey.swift */,
 				9B2D34941BF644740090900C /* MyPlayground.playground */,
 				9B0AA66E1BF3B37B00F2A981 /* NS */,
@@ -260,7 +260,7 @@
 				9B2D348F1BF504650090900C /* SwiftEmitNS.swift in Sources */,
 				9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */,
 				9B0AA6721BF3B44600F2A981 /* KVOAdaptor.swift in Sources */,
-				9B0AA66D1BF3B20900F2A981 /* Payloads.swift in Sources */,
+				9B0AA66D1BF3B20900F2A981 /* Events.swift in Sources */,
 				9BDD60831BFCFD4B00A480F1 /* README.md in Sources */,
 				9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */,
 			);
