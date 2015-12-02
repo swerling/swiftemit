@@ -19,16 +19,18 @@ the redundant guard at the top of every handler.
 Instead of this:
 
   func myFunc(event: Event) {
-    guard let event = event as? ValueChange else { return }
+    guard let event = event as? Events.ValueChange else { return }
     if event.oldValue...
   }
 
-Want this:
+Want something more like this:
 
-  func myFunc(event: ValueChange) {
+  func myFunc(event: Events.ValueChange) {
     if event.oldValue...
   }
 
 Having fooled around with this, one big problem is the mapping table technique. How to keep a map of handlers each with their own signiture?
+
+I think if in the mapping table I put an "X as Handler" in the right spot, can pull this off. Not sure though.
 
 3. Docs

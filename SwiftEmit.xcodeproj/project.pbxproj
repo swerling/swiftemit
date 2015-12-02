@@ -22,7 +22,6 @@
 		9BB2A2E21BFE3C4600883D2F /* StructEmitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E11BFE3C4600883D2F /* StructEmitterTests.swift */; };
 		9BB2A2E41BFE5ADD00883D2F /* NSAdaptorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB2A2E31BFE5ADD00883D2F /* NSAdaptorTests.swift */; };
 		9BDD60811BFCD94E00A480F1 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 9BDD60801BFCD94E00A480F1 /* TODO */; };
-		9BDD60831BFCFD4B00A480F1 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 9BDD60821BFCFD4B00A480F1 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -261,7 +260,6 @@
 				9B0AA6671BF3AF6600F2A981 /* SwiftEmit.swift in Sources */,
 				9B0AA6721BF3B44600F2A981 /* KVOAdaptor.swift in Sources */,
 				9B0AA66D1BF3B20900F2A981 /* Events.swift in Sources */,
-				9BDD60831BFCFD4B00A480F1 /* README.md in Sources */,
 				9B0AA6761BF3C2AC00F2A981 /* CoreMotionAdaptor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

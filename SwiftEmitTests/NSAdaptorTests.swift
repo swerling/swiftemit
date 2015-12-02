@@ -141,7 +141,6 @@ class NSAdaptorTests: XCTestCase {
     var proof:Float? = nil
     device.swiftEmitFloat("floatVar") { event in
       guard let event = event as? Events.KVO else { return }
-      
       proof = event.newValue as? Float // tests below look for this
     }
     

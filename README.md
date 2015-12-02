@@ -1,30 +1,27 @@
 # SwiftEmit
 
 Observer pattern for Swift, with similarities to nodejs EventEmitters and 
-smalltalk 'Announcements.'
+to Smalltalk 'Announcements.'
 
 Unifies and simplifies event handling for swift objects, NS KVO events, 
-NSNotificationCenter events, etc.
+NSNotificationCenter events, etc. (see examples below)
 
-Usage for NS KVO, NotificationCenter, and CoreMotion events 
-shown further down.
+To use SwiftEmit, you need to:
+* Define some event types 
+* Create handlers for those events
+* Emit those events
 
-To use swift emit on swift classes, you need to:
-* Define some event payload types
-* Emit instances of those payloads
-* Create event handlers and bind them to events by payload type
-
-##### Define some event payload types
+##### Define some event types
 ```
 class ColorChange {
   color: String
 }
 ```
 
-Payloads can be instances of Any type, but typically will
-by objects (class instances), structs, or enum values. 
+Events can be instances of Any type, but typically will
+be class instances, struct instances, or enum values. 
 
-##### Emit instances of those payload types 
+##### Emit instances of those events
 
 ```
 class MyClass: EmitterClass {
@@ -41,22 +38,22 @@ for an illustrative example.
 
 ##### Register event handlers
 
-Register handlers for a given payload type like this:
+Register handlers for a given event type like this:
 
 ```
 
 // Using trailing closure...:
 
 myEmitter.on(ColorChange.self) { event in
-  guard let payload = event.payload as? ColorChange else { return }
-  print("The new color for myObject is \(payload.color)")
+  guard let event = event as? ColorChange else { return }
+  print("The new color for myObject is \(event.color)")
 }
 
 // ...or by passing a function: 
 
 func colorChanged(event: Event) {
-  guard let payload = event.payload as? ColorChange else { return }
-  print("The new color for myObject is \(payload.color)")
+  guard let event = event as? ColorChange else { return }
+  print("The new color for myObject is \(event.color)")
 }
 myEmitter.on(ColorChange.self, run: colorChanged)
 
@@ -70,8 +67,8 @@ handler styles as above, eg:
 ```
   // KVO
   backCameraDevice.swiftEmitFloat { event in 
-    guard let payload = event.payload as? SwiftEmit.Payload.KVO else { return }
-    print("ISO Changed from \(payload.oldValue) -> \(payload.newValue) ")
+    guard let event = event as? SwiftEmit.Events.KVO else { return }
+    print("ISO Changed from \(event.oldValue) -> \(event.newValue) ")
   }
 
   // Notification center
@@ -94,11 +91,8 @@ NOTE: call SwiftEmitNS.startAll() and stopAll() somewhere in your app to start/s
 ## Features
 
 * Observer pattern similar to nodejs Emitter, but...
-* ...Emits objects (or structs) instead of string events (concept copied from 'Announcements' in smalltalk). Eg. see http://pharo.gemtalksystems.com/book/LanguageAndLibraries/announcements/
-* Simple syntax to emit a payload, register/deregister event handlers
-* Event contains: the payload, the context.  Handlers can side-effect the context 
-(see examples below)
-* Instances of Any can by payloads, typically class instances, structs, or enum values
+* ...Emits class or struct instances (or enum values) instead of string events (concept copied from 'Announcements' in smalltalk). Eg. see http://pharo.gemtalksystems.com/book/LanguageAndLibraries/announcements/
+* Simple syntax to emit an event, register/deregister event handlers
 * Adaptors for NS KVO, NotificationCenter, NSOperationQueue, where handlers take the same form as regular SwiftEmit events. (see examples below)
 
 ## More Examples
@@ -108,7 +102,7 @@ Handlers for SwiftEmit all take the form SwiftEmit.Handler:
 ```(SwiftEmit.Event) -> ()```
 
 The handlers are the same form for KVO, CoreMotion, NotificationCenter and 
-plain old swift objects and structs. (POSOAS?)
+plain old swift class or struct instances. (POSCOSI?)
 
 ### KVO Events:
 
@@ -116,8 +110,8 @@ Example of observing the ISO value of a camera (a Float) on an iphone:
 
   ```
     camera.swiftEmitFloat { event in 
-      guard let payload = event.payload as? Payload.KVO else { return }
-      print("ISO Changed from \(payload.oldValue) -> \(payload.newValue) ")
+      guard let event = event as? Events.KVO else { return }
+      print("ISO Changed from \(event.oldValue) -> \(event.newValue) ")
     }
 
     // Eg. put in viewDidLoad and/or AppDelegate.applicationDidBecomeActive()
@@ -144,7 +138,9 @@ Compare to the standard Swift equivalent for example above:
       ofObject object: AnyObject, change: [NSObject : AnyObject],
       context: UnsafeMutablePointer<Void>) {
       if context == &isoContext {
-        print("Change iso to \(keyPath)")
+        if let newValue = change?[NSKeyValueChangeNewKey] {
+          print("Change iso to \(newValue)")
+        }
       }
     }
     ...
@@ -166,18 +162,25 @@ SwiftEmit:
 SwiftEmit:
 
    ```swift
-    CMMotionManager().swiftEmit(updateInterval: NSTimeInterval(1.0)) { event in
-      guard let payload = event.payload as? SwiftEmit.Payload.DeviceMotionEvent  else { return }
+    CMMotionManager().swiftEmit(
+      motionManager: CMMotionManager(),
+      queue: NSOperationQueue.currentQueue(),
+      updateInterval: NSTimeInterval(1.0)) { event in
 
-      guard payload.error == nil else {
-        return warn("Process motion ns error: \(payload.error)")
+      guard let event = event as? SwiftEmit.Events.DeviceMotionEvent  else { return }
+
+      guard event.error == nil else {
+        return warn("Process motion ns error: \(event.error)")
       }
-      guard let deviceMotion = payload.motion else {
+
+      guard let deviceMotion = event.motion else {
         return warn("Process motion event contains neither motion nor error")
       }
+
       self.processMotion(deviceMotion)
     }
    ```
+All of the params to CMMotionManager.swiftEmit() are optional.
 
 SwiftEmitNS.startAll() and stopAll() are needed for core motion too.
 
@@ -188,26 +191,31 @@ This example can be copy/pasted into an xcode 7.x playground.
 ```
 import SwiftEmit
 
-// Some example event types. Instances of these will be emitted as event.payloads
+// Some example event types. Instances of these will be emitted as events.
 
 struct ColorChange { var color: String }
 
-struct RequestShapeValidation {
+class RequestShapeValidation {
   var shape: Shape
+  var invalidReason: String?
+  init(shape: Shape) {
+    self.shape = shape
+  }
 }
 
-// An example class that emits events. The RequestShapeValidation event will
-// take advantage of the Event.context to allow associated handlers to veto
-// a color change. The ColorChange event will be used to announce a successful
+// An example class that emits events. If one of the RequestShapeValidation
+// handlers puts something in 'invalidReason', the value is rolled back.
+// If not, the ColorChange event will be used to announce a successful
 // color change.
 
 class Shape: EmitterClass {
   var color: String = "red" {
     didSet {
-      let event = emit(RequestShapeValidation(shape: self))
-      if let reason = event?.context["invalid"] as? String {
+      let event = RequestShapeValidation(shape: self)
+      emit(event)
+      if event.invalidReason != nil {
         self.color = oldValue
-        print("Invalid: \(reason)")
+        print("Invalid: \(event.invalidReason)")
       }
       else {
         emit(ColorChange(color: color))
@@ -223,20 +231,20 @@ var shape = Shape()
 // This one will announce the change of shape's color (using trailing closure
 // syntax for mapping):
 shape.on(ColorChange.self) { event in
-  guard let payload = event.payload as? ColorChange else { return }
-  print("The new color for shape is \(payload.color)")
+  guard let event = event as? ColorChange else { return }
+  print("The new color for shape is \(event.color)")
 }
 
 // Declare invalid any color change that is not red, blue, or green.
 // This one shows how to register a handler for an event by passing a function
 // (as opposed to using trailing closure syntax)
 func validateShape(event: Event) {
-  guard let payload = event.payload as? RequestShapeValidation else { return }
+  guard let event = event as? RequestShapeValidation else { return }
   
-  print("The proposed color for myObject is \(payload.shape.color)")
+  print("The proposed color for myObject is \(event.shape.color)")
   
-  if !["red", "blue", "green"].contains(payload.shape.color) {
-    event.context["invalid"] = "Color is all wrong: \(payload.shape.color)"
+  if !["red", "blue", "green"].contains(event.shape.color) {
+    event.invalidReason = "Color is all wrong: \(event.shape.color)"
   }
   
 }

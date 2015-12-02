@@ -14,30 +14,9 @@ public typealias Event = Any
 
 public protocol Emitter {
   func swiftEmitId() -> Int
-  
-  /**
-   For the current Emitter, call handler when events of given type are emitted.
-   
-   - parameter type: Event type. Any object be a SwiftEmit event.
-   - parameter handler: a Handler, (Event) -> (). Called when events of given type are emitted.
-   
-   - returns: nada
-   */
   func on(eventType: Any.Type, run handler: Handler)
-  
-  /**
-   Fire an event, ie a class instance, struct, or enum value
-   */
   func emit(event: Event)
-  
-  /**
-   Todo: doc
-   */
   func removeAllEmitHandlers()
-  
-  /**
-   Todo: doc
-   */
   func removeEmitHandlers(eventType: Any.Type)
 }
 

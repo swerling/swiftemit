@@ -138,24 +138,4 @@ class SwiftEmitTests: XCTestCase {
       "Removed all event handlers, expected var to be unchanged")
   }
   
-  func testEventContext() {
-    
-    let emitter = TestEmitter()
-    var proofHandlerFired = "did not fire yet"
-    
-    emitter.on(Events.ValueChange.self) { event in
-      
-      let event = event as? Events.ValueChange
-      XCTAssert(event != nil,
-        "Expected event to be ValueChangeEvent based on TestEmitter's didSet")
-      
-      proofHandlerFired = "handler did fire"
-    }
-    
-    emitter.foo = "hi" // should trigger event
-    
-    XCTAssert(proofHandlerFired == "handler did fire",
-      "just testing that handler fired at all. Main tests fo handler firing in testEventMap, since event context tests are inside of a handler")
-  }
-  
 }
