@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SwiftEmit"
-  s.version      = "0.0.4"
+  s.version      = "0.0.5"
   s.summary      = "Events Framework, unifies handling of swift, NSKVO, CoreMotion, and NotificationCenter events"
   s.description  = <<-DESC
                     Swift Events framework. Unify and simplify swift, NS KVO, Core Motion, and Notification Center events.
