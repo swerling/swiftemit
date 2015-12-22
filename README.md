@@ -53,7 +53,7 @@ for an illustrative example.
 There are adaptors for KVO and NotificationCenter events that use the same 
 handler styles as above, eg:
 
-```
+  ```
   // KVO
   backCameraDevice.swiftEmitFloat { event in 
     guard let event = event as? SwiftEmit.Events.KVO else { return }
@@ -65,7 +65,7 @@ handler styles as above, eg:
   ctr.swiftEmit(UIAccessibilityGuidedAccessStatusDidChangeNotification) { event in
     self.handleGuidedAccessChange()
   }
-```
+  ```
 
 There is also a CoreMotion adaptor (see examples below).
 
@@ -151,7 +151,7 @@ SwiftEmit:
 
 SwiftEmit:
 
-   ```swift
+   ```
     CMMotionManager().swiftEmit(
       motionManager: CMMotionManager(),
       queue: NSOperationQueue.currentQueue(),
