@@ -4,25 +4,39 @@ Observer pattern for Swift, with similarities to nodejs EventEmitters and
 to Smalltalk 'Announcements.'
 
 Unifies and simplifies event handling for swift objects, NS KVO events, 
-NSNotificationCenter events, etc. (see examples below)
+NSNotificationCenter events.
 
-To use SwiftEmit, you need to:
+##### Usage 
+
+Cliffnotes version. More detailed examples below.
+
 * Define some event types 
-* Create handlers for those events
-* Emit those events
-
-##### Define some event types
 ```
+// Any class instance, struct instance, or Enum value can be an event.
 class ColorChange {
   color: String
 }
 ```
 
-Events can be instances of Any type, but typically will
-be class instances, struct instances, or enum values. 
+* Create handlers for those events
+```
 
-##### Emit instances of those events
+// Using trailing closure...:
+myEmitter.on(ColorChange.self) { event in
+  guard let event = event as? ColorChange else { return }
+  print("The new color for myObject is \(event.color)")
+}
 
+// ...or by passing a function reference: 
+func colorChanged(event: Event) {
+  guard let event = event as? ColorChange else { return }
+  print("The new color for myObject is \(event.color)")
+}
+myEmitter.on(ColorChange.self, run: SomeClass.colorChanged)
+
+```
+
+* Emit those events
 ```
 class MyClass: EmitterClass {
   func notifyColorChange() {
@@ -30,34 +44,9 @@ class MyClass: EmitterClass {
     ...
 ```
 
-For classes, adding the extension EmitterClass is enough to make it an Emitter.
-
-Structs can be emitters too, by adding the 'Emitter' extension. 
-But there is a little extra work and some gotchas on structs, so see [StructEmitterTests.swift](SwiftEmitTests/StructEmitterTests.swift) 
+* For classes, adding the extension EmitterClass is enough to make it a SwiftEmit Emitter.
+* Structs can be emitters too, by adding the 'Emitter' extension. But there is a little extra work and some gotchas on structs, so see [StructEmitterTests.swift](SwiftEmitTests/StructEmitterTests.swift) 
 for an illustrative example.
-
-##### Register event handlers
-
-Register handlers for a given event type like this:
-
-```
-
-// Using trailing closure...:
-
-myEmitter.on(ColorChange.self) { event in
-  guard let event = event as? ColorChange else { return }
-  print("The new color for myObject is \(event.color)")
-}
-
-// ...or by passing a function: 
-
-func colorChanged(event: Event) {
-  guard let event = event as? ColorChange else { return }
-  print("The new color for myObject is \(event.color)")
-}
-myEmitter.on(ColorChange.self, run: colorChanged)
-
-```
 
 ##### NS KVO Events
 
@@ -91,9 +80,10 @@ NOTE: call SwiftEmitNS.startAll() and stopAll() somewhere in your app to start/s
 ## Features
 
 * Observer pattern similar to nodejs Emitter, but...
-* ...Emits class or struct instances (or enum values) instead of string events (concept copied from 'Announcements' in smalltalk). Eg. see http://pharo.gemtalksystems.com/book/LanguageAndLibraries/announcements/
+* ...Emits class or struct instances (or enum values) instead of string events. Concept copied from 'Announcements' in smalltalk, Eg. see http://pharo.gemtalksystems.com/book/LanguageAndLibraries/announcements/
 * Simple syntax to emit an event, register/deregister event handlers
 * Adaptors for NS KVO, NotificationCenter, NSOperationQueue, where handlers take the same form as regular SwiftEmit events. (see examples below)
+  * Registration/Degregistration for NS event adapators is idempotent. Program will not crash if deregestiring an already deregistered object.
 
 ## More Examples
 
