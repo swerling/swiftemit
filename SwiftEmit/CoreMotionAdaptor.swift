@@ -22,24 +22,24 @@ import CoreMotion
 extension Events {
   public struct DeviceMotionEvent {
     public let motion: CMDeviceMotion?
-    public let error: NSError?
-    public init(motion: CMDeviceMotion?, error: NSError?) {
+    public let error: Error?
+    public init(motion: CMDeviceMotion?, error: Error?) {
       self.motion = motion
       self.error = error
     }
   }
 }
 
-public class AdaptorForCoreMotion: SwiftEmitNS {
+open class AdaptorForCoreMotion: SwiftEmitNS {
   
   let motionManager: CMMotionManager!
-  let nsOpQueue: NSOperationQueue?
-  let updateInterval: NSTimeInterval
-  private var observing = false
+  let nsOpQueue: OperationQueue?
+  let updateInterval: TimeInterval
+  fileprivate var observing = false
   
   init(motionManager: CMMotionManager = CMMotionManager(),
-    queue: NSOperationQueue? = NSOperationQueue.currentQueue(),
-    updateInterval: NSTimeInterval = 1.0)
+    queue: OperationQueue? = OperationQueue.current,
+    updateInterval: TimeInterval = 1.0)
   {
     self.motionManager = motionManager
     self.nsOpQueue = queue
@@ -50,7 +50,7 @@ public class AdaptorForCoreMotion: SwiftEmitNS {
     stopObserving()
   }
   
-  public override func startObserving() -> Bool {
+  @discardableResult open override func startObserving() -> Bool {
     guard !observing else { return false }
    
     observing = true
@@ -62,15 +62,15 @@ public class AdaptorForCoreMotion: SwiftEmitNS {
       return false
     }
     
-    motionManager.startDeviceMotionUpdatesToQueue(queue) {
+    motionManager.startDeviceMotionUpdates(to: queue) {
       (deviceMotion, error) in
-      self.handleDeviceMotionUpdate(deviceMotion, error)
+      self.handleDeviceMotionUpdate(motion: deviceMotion, error: error)
     }
     
     return true
   }
   
-  public override func stopObserving() -> Bool {
+  @discardableResult open override func stopObserving() -> Bool {
     guard observing else { return false }
    
     motionManager.stopDeviceMotionUpdates()
@@ -79,7 +79,7 @@ public class AdaptorForCoreMotion: SwiftEmitNS {
     return true
   }
   
-  private func handleDeviceMotionUpdate(motion: CMDeviceMotion?, _ error: NSError?) {
+  fileprivate func handleDeviceMotionUpdate(motion: CMDeviceMotion?, error: Error?) {
     emit(Events.DeviceMotionEvent(motion: motion, error: error))
   }
   
@@ -87,9 +87,9 @@ public class AdaptorForCoreMotion: SwiftEmitNS {
 
 extension CMMotionManager {
   public func swiftEmit(
-    queue: NSOperationQueue? = NSOperationQueue.currentQueue(),
-    updateInterval: NSTimeInterval = 1.0,
-    handler: Handler)
+    queue: OperationQueue? = OperationQueue.current,
+    updateInterval: TimeInterval = 1.0,
+    handler: @escaping Handler)
     -> AdaptorForCoreMotion
   {
     let adaptor = AdaptorForCoreMotion(

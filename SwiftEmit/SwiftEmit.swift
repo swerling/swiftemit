@@ -14,10 +14,10 @@ public typealias Event = Any
 
 public protocol Emitter {
   func swiftEmitId() -> Int
-  func on(eventType: Any.Type, run handler: Handler)
-  func emit(event: Event)
+  func on(_ eventType: Any.Type, run handler: @escaping Handler)
+  func emit(_ event: Event)
   func removeAllEmitHandlers()
-  func removeEmitHandlers(eventType: Any.Type)
+  func removeEmitHandlers(_ eventType: Any.Type)
 }
 
 
@@ -56,7 +56,7 @@ public extension Emitter {
   - Returns: void
    
   */
-  public func on(eventType: Any.Type, run handler: Handler) {
+  public func on(_ eventType: Any.Type, run handler: @escaping Handler) {
     EventMap.add(self, typeId: EventMap.typeId(eventType), handler: handler)
   }
   
@@ -72,7 +72,7 @@ public extension Emitter {
                                           name: 'myvar'))
    - Parameter event: Just about anything you want can be an event. Typically an instance of a class or a struct.
   */
-  func emit(event: Event) {
+  func emit(_ event: Event) {
     guard let handlers = EventMap.handlers(self, event: event) else {
       return
     }
@@ -83,17 +83,18 @@ public extension Emitter {
     EventMap.removeAll(self)
   }
   
-  public func removeEmitHandlers(eventType: Any.Type) {
+  public func removeEmitHandlers(_ eventType: Any.Type) {
     EventMap.remove(self, typeId: EventMap.typeId(eventType))
   }
   
 }
 
-// just to juxtapose to ObjectEmitter
+// just to juxtapose to EmitterClass
 public typealias EmitterStruct = Emitter
 
 // Plain old emitter, but with a default swiftEmitId based on the ObjectIdentifier
 public protocol EmitterClass: class, Emitter { }
+
 public extension EmitterClass {
   public func swiftEmitId() -> Int{
     return ObjectIdentifier(self).hashValue
@@ -105,25 +106,26 @@ private class EventMap {
   typealias EventTypeLookup = [EventTypeId: [Handler]]
   static var objectLookup = [Int: EventTypeLookup]()
   
-  static func typeId(any: Any) -> EventTypeId {
-    return typeId(any.dynamicType)
+  static func typeId(_ any: Any) -> EventTypeId {
+    //return typeId(type(of: (any) as AnyObject))
+    return typeId(type(of: any))
   }
   
-  static func typeId(anyType: Any.Type) -> EventTypeId {
+  static func typeId(_ anyType: Any.Type) -> EventTypeId {
     return "\(anyType.self)"
   }
   
-  static func removeAll<T: Emitter>(object: T) {
+  static func removeAll<T: Emitter>(_ object: T) {
     let ohash = object.swiftEmitId()
     objectLookup[ohash] = nil
   }
   
-  static func remove<T: Emitter>(object: T, typeId: EventTypeId) {
+  static func remove<T: Emitter>(_ object: T, typeId: EventTypeId) {
     let ohash = object.swiftEmitId()
     objectLookup[ohash]?[typeId] = nil
   }
   
-  static func add<T: Emitter>(object: T, typeId: EventTypeId, handler: Handler) {
+  static func add<T: Emitter>(_ object: T, typeId: EventTypeId, handler: @escaping Handler) {
     let ohash = object.swiftEmitId()
     if var eventTypeLookup = objectLookup[ohash] {
       if eventTypeLookup[typeId] != nil {
@@ -138,7 +140,7 @@ private class EventMap {
     // print("Added \(ohash)")
   }
   
-  static func handlers<T: Emitter>(object: T, event: Event) -> [Handler]? {
+  static func handlers<T: Emitter>(_ object: T, event: Event) -> [Handler]? {
     let ohash = object.swiftEmitId()
     guard let eventTypeToHandlers = objectLookup[ohash] else { return nil }
     let typeid = typeId(event)

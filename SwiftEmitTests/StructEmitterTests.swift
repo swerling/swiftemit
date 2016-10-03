@@ -39,13 +39,13 @@ class StructEmitTests: XCTestCase {
   struct ShapeChange { var shape: Shape }
 
   func testStructEmit() {
-    func handleShapeChange(sides: Int, _ event: Event) {
+    func handleShapeChange(_ sides: Int, _ event: Event) {
       guard let event = event as? ShapeChange else { return }
       print("\(event.shape.color) shape fired register\(sides)SidedShape")
     }
-    func beA3SidedShape(event: Event) { handleShapeChange(3, event) }
-    func beA4SidedShape(event: Event) { handleShapeChange(4, event) }
-    func beA5SidedShape(event: Event) { handleShapeChange(5, event) }
+    func beA3SidedShape(_ event: Event) { handleShapeChange(3, event) }
+    func beA4SidedShape(_ event: Event) { handleShapeChange(4, event) }
+    func beA5SidedShape(_ event: Event) { handleShapeChange(5, event) }
     
     var redShape = Shape(sides: 3, color: "red")
     var greenShape = Shape(sides: 4, color: "green")

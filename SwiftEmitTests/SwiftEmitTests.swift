@@ -10,8 +10,8 @@ import XCTest
 @testable import SwiftEmit
 
 enum EnumEvent {
-  case DidSet
-  case WillSet
+  case didSet
+  case willSet
 }
 
 class TestEmitter: EmitterClass {
@@ -25,7 +25,7 @@ class TestEmitter: EmitterClass {
   }
   var enumFoo = "initial value of enumFoo" {
     didSet {
-      emit(EnumEvent.DidSet)
+      emit(EnumEvent.didSet)
     }
   }
 }
@@ -40,7 +40,7 @@ class SwiftEmitTests: XCTestCase {
     var will2 = "'will2' not called yet"
     var did = "'did' not called yet"
     
-    func handler1(event: Event) {
+    func handler1(_ event: Event) {
       guard event is Events.ValueWillChange else { return }
       will = "handler 1 will fire"
     }
@@ -77,14 +77,14 @@ class SwiftEmitTests: XCTestCase {
     let emitter = TestEmitter() // ie. hashValue = 1
     var did = ""
     
-    func didHandler(event: Event) {
+    func didHandler(_ event: Event) {
       guard let event = event as? EnumEvent else {return}
       did = "did fired: \(event)"
     }
     
     emitter.on(EnumEvent.self, run: didHandler)
     emitter.enumFoo = "Hey"
-    XCTAssert(did == "did fired: DidSet",
+    XCTAssert(did == "did fired: didSet",
       "expected handler to fire with enum event EnumEvent.DidSet. Did: '\(did)'")
   }
   

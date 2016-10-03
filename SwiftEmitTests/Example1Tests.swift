@@ -50,7 +50,7 @@ class Example1Tests: XCTestCase {
     }
     
     // Register handler for event by passing function
-    func validateShape(event: Event) {
+    func validateShape(_ event: Event) {
       guard let event = event as? RequestShapeValidation else { return }
       print("The proposed color for myObject is \(event.shape.color)")
       if !["red", "blue", "green"].contains(event.shape.color) {

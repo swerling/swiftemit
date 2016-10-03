@@ -9,15 +9,15 @@
 import Foundation
 
 // Eg. See NotificationCenterWrapper, CoreMotionWrapper, KVOWrapper
-public class SwiftEmitNS: NSObject, EmitterClass {
+open class SwiftEmitNS: NSObject, EmitterClass {
   
-  public static var all = [SwiftEmitNS]()
+  open static var all = [SwiftEmitNS]()
   
-  public static func startAll() {
+  open static func startAll() {
     SwiftEmitNS.all.forEach {ns in ns.startObserving()}
   }
   
-  public static func stopAll() {
+  open static func stopAll() {
     SwiftEmitNS.all.forEach {ns in ns.stopObserving()}
   }
   
@@ -26,15 +26,15 @@ public class SwiftEmitNS: NSObject, EmitterClass {
     SwiftEmitNS.all.append(self)
   }
   
-  public func startObserving()-> Bool {
-    preconditionFailure("Subclasses must implement \(__FUNCTION__)")
+  @discardableResult open func startObserving()-> Bool {
+    preconditionFailure("Subclasses must implement \(#function)")
   }
-  public func stopObserving()-> Bool {
-    preconditionFailure("Subclasses must implement \(__FUNCTION__)")
+  @discardableResult open func stopObserving()-> Bool {
+    preconditionFailure("Subclasses must implement \(#function)")
   }
   
 }
 
-public func swiftEmitId(obj: SwiftEmitNS) -> Int {
+public func swiftEmitId(_ obj: SwiftEmitNS) -> Int {
   return obj.hashValue
 }

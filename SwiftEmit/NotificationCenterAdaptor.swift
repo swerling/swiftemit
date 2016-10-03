@@ -31,8 +31,8 @@ extension Events {
   public struct NotificationCenterEvent{}
 }
 
-extension NSNotificationCenter {
-  public func swiftEmit(eventName:String, handler: Handler)
+extension NotificationCenter {
+  @discardableResult public func swiftEmit(_ eventName:String, handler: @escaping Handler)
     -> AdaptorForNSNotificationCenter
   {
     let adaptor = AdaptorForNSNotificationCenter(
@@ -42,7 +42,7 @@ extension NSNotificationCenter {
   }
 }
 
-public class AdaptorForNSNotificationCenter: SwiftEmitNS {
+open class AdaptorForNSNotificationCenter: SwiftEmitNS {
   
   var observing = false
   var notificationCenterEventName: String
@@ -55,12 +55,12 @@ public class AdaptorForNSNotificationCenter: SwiftEmitNS {
     stopObserving()
   }
   
-  public override func startObserving() -> Bool {
+  open override func startObserving() -> Bool {
     guard !observing else { return false }
    
-    NSNotificationCenter.defaultCenter().addObserver(self,
-      selector: "handle",
-      name: notificationCenterEventName,
+    NotificationCenter.default.addObserver(self,
+      selector: #selector(AdaptorForNSNotificationCenter.handle),
+      name: NSNotification.Name(rawValue: notificationCenterEventName),
       object: nil)
     
     observing = true
@@ -68,10 +68,10 @@ public class AdaptorForNSNotificationCenter: SwiftEmitNS {
     return true
   }
   
-  public override func stopObserving() -> Bool {
+  @discardableResult open override func stopObserving() -> Bool {
     guard observing else { return false }
    
-    NSNotificationCenter.defaultCenter().removeObserver(self)
+    NotificationCenter.default.removeObserver(self)
     observing = false
     
     return true

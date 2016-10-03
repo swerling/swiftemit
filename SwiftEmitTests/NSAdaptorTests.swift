@@ -18,7 +18,7 @@ class NSAdaptorTests: XCTestCase {
   
   func testNotificationCenter() {
     var proof:String? = nil
-    NSNotificationCenter.defaultCenter().swiftEmit("notifyme") { event in
+    NotificationCenter.default.swiftEmit("notifyme") { event in
       proof = "Notified"
     }
     XCTAssert(proof == nil,
@@ -29,7 +29,7 @@ class NSAdaptorTests: XCTestCase {
     SwiftEmitNS.startAll()
     SwiftEmitNS.startAll()
     SwiftEmitNS.startAll()
-    NSNotificationCenter.defaultCenter().postNotificationName("notifyme", object: nil)
+    NotificationCenter.default.post(name: Notification.Name(rawValue: "notifyme"), object: nil)
     XCTAssert(proof == "Notified",
       "should have gotten NotificationCenter event, handler should set proof to 'Notified'")
     
@@ -38,7 +38,7 @@ class NSAdaptorTests: XCTestCase {
     SwiftEmitNS.stopAll()
     SwiftEmitNS.stopAll()
     proof = "blah"
-    NSNotificationCenter.defaultCenter().postNotificationName("notifyme", object: nil)
+    NotificationCenter.default.post(name: Notification.Name(rawValue: "notifyme"), object: nil)
     XCTAssert(proof == "blah",
       "should NOT have gotten NotificationCenter event, stopped observer")
     

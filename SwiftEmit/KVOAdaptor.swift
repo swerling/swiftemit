@@ -34,9 +34,9 @@ extension NSObject {
    - Parameter keyPath: the KVO keypath
    - Parameter handler: a SwiftEmit style closure or function (Event) -> ()
   */
-  public func swiftEmitInt<T: SignedIntegerType>(ctx: T, keyPath:String, handler: Handler) -> AdaptorForNSKVO?  {
+  public func swiftEmitInt<T: SignedInteger>(_ ctx: T, keyPath:String, handler: @escaping Handler) {
     var context = T.init(0)
-    return swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
+    swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
   }
   
   /**
@@ -53,19 +53,19 @@ extension NSObject {
    - Parameter keyPath: the KVO keypath
    - Parameter handler: a SwiftEmit style closure or function (Event) -> ()
   */
-  public func swiftEmitUInt<U: UnsignedIntegerType>(ctx: U, keyPath:String, handler: Handler) -> AdaptorForNSKVO?  {
+  public func swiftEmitUInt<U: UnsignedInteger>(_ ctx: U, keyPath:String, handler: @escaping Handler) {
     var context = U.init(-0)
-    return swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
+    swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
   }
   
-  public func swiftEmitFloat(keyPath:String, handler: Handler) -> AdaptorForNSKVO? {
+  public func swiftEmitFloat(_ keyPath:String, handler: @escaping Handler) {
     var context = Float()
-    return swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
+    swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
   }
   
-  public func swiftEmitBool(keyPath:String, handler: Handler) -> AdaptorForNSKVO? {
+  public func swiftEmitBool(_ keyPath:String, handler: @escaping Handler) {
     var context = Bool()
-    return swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
+    swiftEmit(onKeyPath: keyPath, context: &context, handler: handler)
   }
   
   /**
@@ -75,9 +75,9 @@ extension NSObject {
   and swiftEmitBool for examples of how to create a new helper method for some
   new kvo type.
   */
-  public func swiftEmit(onKeyPath kp:String,
-    context: UnsafeMutablePointer<Void>,
-    handler: Handler) -> AdaptorForNSKVO
+  @discardableResult public func swiftEmit(onKeyPath kp:String,
+    context: UnsafeMutableRawPointer,
+    handler: @escaping Handler) -> AdaptorForNSKVO
   {
     let adaptor = AdaptorForNSKVO(
       observee: self,
@@ -99,20 +99,20 @@ extension Events {
   }
 }
 
-public class AdaptorForNSKVO: SwiftEmitNS {
+open class AdaptorForNSKVO: SwiftEmitNS {
   
   let NullValue  = "__KVO_CHANGED_VALUE_WAS_NULL__"
   
-  var context: UnsafeMutablePointer<Void>
+  var context: UnsafeMutableRawPointer
   var keyPath: String
   var observee: NSObject
   var observing = false
   
-  let options =  NSKeyValueObservingOptions([.New, .Old])
+  let options =  NSKeyValueObservingOptions([.new, .old])
   
   init(observee: NSObject,
     keyPath: String,
-    context: UnsafeMutablePointer<Void>) {
+    context: UnsafeMutableRawPointer) {
     self.observee = observee
     self.keyPath = keyPath
     self.context = context
@@ -122,7 +122,7 @@ public class AdaptorForNSKVO: SwiftEmitNS {
     stopObserving()
   }
   
-  public override func startObserving() -> Bool {
+  @discardableResult open override func startObserving() -> Bool {
     guard !observing else { return false }
    
     observee.addObserver(self,
@@ -135,7 +135,7 @@ public class AdaptorForNSKVO: SwiftEmitNS {
     return true
   }
   
-  public override func stopObserving() -> Bool {
+  @discardableResult open override func stopObserving() -> Bool {
     guard observing else { return false }
     
     observee.removeObserver(self, forKeyPath: keyPath)
@@ -144,13 +144,13 @@ public class AdaptorForNSKVO: SwiftEmitNS {
     return true
   }
   
-  override public func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+  override open func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
     
     //print("=== Observe: \(keyPath)")
     
     guard keyPath == self.keyPath  && context == self.context else {
-      return super.observeValueForKeyPath(nil,
-        ofObject: object,
+      return super.observeValue(forKeyPath: nil,
+        of: object,
         change: change,
         context: context)
     }
@@ -158,8 +158,8 @@ public class AdaptorForNSKVO: SwiftEmitNS {
     var oldVal: AnyObject?
     var newVal: AnyObject?
     if let c = change {
-      if let ov = c[NSKeyValueChangeOldKey] { oldVal = ov }
-      if let nv = c[NSKeyValueChangeNewKey] { newVal = nv }
+      if let ov = c[NSKeyValueChangeKey.oldKey] { oldVal = ov as AnyObject? }
+      if let nv = c[NSKeyValueChangeKey.newKey] { newVal = nv as AnyObject? }
     }
     
     emit(Events.KVO(oldValue: oldVal, newValue: newVal))
