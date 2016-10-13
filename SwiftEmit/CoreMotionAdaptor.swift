@@ -86,7 +86,7 @@ open class AdaptorForCoreMotion: SwiftEmitNS {
 }
 
 extension CMMotionManager {
-  public func swiftEmit(
+  @discardableResult public func swiftEmit(
     queue: OperationQueue? = OperationQueue.current,
     updateInterval: TimeInterval = 1.0,
     handler: @escaping Handler)
